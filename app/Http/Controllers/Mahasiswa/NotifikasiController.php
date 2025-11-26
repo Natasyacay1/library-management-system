@@ -1,85 +1,80 @@
 <?php
 
-namespace App\Http\Controllers\Mahasiswa;
+namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
+use App\Models\Notification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class NotifikasiController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        //
+        $user = Auth::user();
+        $notifications = NotifikasiController::forUser($user->id)
+                                ->recent()
+                                ->paginate(15);
+        
+        return view('student.notifications.index', compact('notifications'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function show(NotifikasiController $notification)
     {
-        //
+        if ($notification->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        if (!$notification->is_read) {
+            $notification->markAsRead();
+        }
+
+        return view('student.notifications.show', compact('notification'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function markAsRead(NotifikasiController $notification)
     {
-        //
+        if ($notification->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $notification->markAsRead();
+
+        return redirect()->back()
+            ->with('success', 'Notifikasi ditandai sebagai sudah dibaca.');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function markAllAsRead()
     {
-        //
+        $user = Auth::user();
+        NotifikasiController::forUser($user->id)
+                ->unread()
+                ->update(['is_read' => true, 'read_at' => now()]);
+
+        return redirect()->back()
+            ->with('success', 'Semua notifikasi ditandai sebagai sudah dibaca.');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    public function destroy(NotifikasiController $notification)
     {
-        //
+        if ($notification->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $notification->delete();
+
+        return redirect()->route('student.notifications.index')
+            ->with('success', 'Notifikasi berhasil dihapus.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
+    public function clearAll()
     {
-        //
-    }
+        $user = Auth::user();
+        NotifikasiController::forUser($user->id)->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        return redirect()->route('student.notifications.index')
+            ->with('success', 'Semua notifikasi berhasil dihapus.');
     }
 }
