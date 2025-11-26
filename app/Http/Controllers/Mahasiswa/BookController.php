@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Student;
 use App\Http\Controllers\Controller;
 use App\Models\Book;
 use App\Models\Category;
+use App\Models\Loan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -41,12 +42,14 @@ class BookController extends Controller
     public function show(Book $book)
     {
         $book->load(['category', 'reviews.user', 'loans']);
-        
         $user = Auth::user();
-        $canReview = $user ? $user->loans()
-            ->where('book_id', $book->id)
-            ->where('status', 'returned')
-            ->exists() : false;
+        $canReview = false;
+        if ($user) {
+            $canReview = Loan::where('user_id', $user->id)
+                ->where('book_id', $book->id)
+                ->where('status', 'returned')
+                ->exists();
+        }
 
         $averageRating = $book->getAverageRating();
         $reviewsCount = $book->getReviewsCount();

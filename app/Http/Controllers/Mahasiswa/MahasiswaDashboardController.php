@@ -6,7 +6,7 @@ use App\Models\Loan;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Notifikasi;
+use App\Models\Notification as Notifikasi;
 
 class MahasiswaDashboardController extends Controller
 {
