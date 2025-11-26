@@ -102,7 +102,7 @@ class LoanController extends Controller
                 ->with('warning', "Buku berhasil dikembalikan dengan denda Rp " . number_format($fineAmount, 0, ',', '.'));
         }
 
-        $this->notificationService->sendReturnConfirmation($loan->user, $loan)
+        $this->notificationService->sendReturnConfirmation($loan->user, $loan);
         return redirect()->route('staff.loans.index')
             ->with('success', 'Buku berhasil dikembalikan.');
     }
