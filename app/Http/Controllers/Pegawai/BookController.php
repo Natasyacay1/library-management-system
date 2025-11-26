@@ -1,86 +1,66 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
 use App\Models\Book;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class BookController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        $books = Book::all();
-        return view('admin.books.index', compact('books'));
+        $query = Book::with('category', 'reviews');
+    
+        
+        if ($request->has('search') && $request->search != '') {
+            $query->search($request->search);
+        }
+        
+        if ($request->has('category') && $request->category != '') {
+            $query->byCategory($request->category);
+        }
+        
+        if ($request->has('availability')) {
+            if ($request->availability === 'available') {
+                $query->available();
+            } elseif ($request->availability === 'unavailable') {
+                $query->where('available_stock', 0);
+            }
+        }
+        
+        $books = $query->withCount(['loans' => function($q) {
+            $q->where('status', 'borrowed');
+        }])
+        ->orderBy('title')
+        ->paginate(12);
+        
+        $categories = Category::all();
+        
+        return view('staff.books.index', compact('books', 'categories'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('admin.books.create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'author' => 'required|string|max:255',
-        ]);
-
-        Book::create($validated);
-
-        return redirect()->route('admin.books.index')
-            ->with('success', 'Book created successfully.');
-    }
-
-    /**
-     * Display the specified resource.
-     */
     public function show(Book $book)
     {
-        return view('admin.books.show', compact('book'));
+        $book->load(['category', 'loans.user', 'reviews.user']);
+        
+        $currentLoans = $book->loans()
+                        ->where('status', 'borrowed')
+                        ->with('user')
+                        ->get();
+        
+        return view('staff.books.show', compact('book', 'currentLoans'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Book $book)
+    public function updateStock(Request $request, Book $book)
     {
-        return view('admin.books.edit', compact('book'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Book $book)
-    {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'author' => 'required|string|max:255',
+        $request->validate([
+            'stock' => 'required|integer|min:0'
         ]);
 
-        $book->update($validated);
-
-        return redirect()->route('admin.books.index')
-            ->with('success', 'Book updated successfully.');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Book $book)
-    {
-        $book->delete();
-
-        return redirect()->route('admin.books.index')
-            ->with('success', 'Book deleted successfully.');
+        $book->updateStock($request->stock);
+        return redirect()->back()
+            ->with('success', 'Stok buku berhasil diperbarui.');
     }
 }
