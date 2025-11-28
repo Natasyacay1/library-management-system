@@ -10,13 +10,8 @@ class MahasiswaMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check()) {
-            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
-        }
-
-        $user = auth()->user();
-        if (!$user->isStudent() && !$user->isAdmin()) {
-            return redirect()->route('homepage')->with('error', 'Akses ditolak. Hanya mahasiswa yang dapat mengakses.');
+        if (!auth()->check() || auth()->user()->role !== 'mahasiswa') {
+            abort(403, 'Akses hanya untuk mahasiswa.');
         }
 
         return $next($request);

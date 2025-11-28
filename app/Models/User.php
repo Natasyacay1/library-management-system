@@ -2,29 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Notifications\Notification;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    const ROLE_ADMIN = 'admin';
-    const ROLE_STAFF = 'pegawai';
-    const ROLE_STUDENT = 'mahasiswa';
-
     protected $fillable = [
         'name',
         'email',
         'password',
-        'role',
-        'university_email',
-        'phone',
-        'address',
-        'fines_balance',
-        'is_blocked'
+        'role', // 'admin', 'pegawai', 'mahasiswa'
     ];
 
     protected $hidden = [
@@ -37,20 +27,13 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'fines_balance' => 'decimal:2',
-            'is_blocked' => 'boolean',
         ];
     }
 
-    // Relationships
+    // ========= RELATIONSHIPS =========
     public function loans()
     {
         return $this->hasMany(Loan::class);
-    }
-
-    public function activeLoans()
-    {
-        return $this->loans()->where('status', 'borrowed');
     }
 
     public function reviews()
@@ -63,63 +46,28 @@ class User extends Authenticatable
         return $this->hasMany(Notification::class);
     }
 
-    public function fines()
+    // ========= ROLE HELPERS =========
+    public function isAdmin(): bool
     {
-        return $this->hasMany(Fine::class);
+        return $this->role === 'admin';
     }
 
-    // Scopes
-    public function scopeStudents($query)
+    public function isPegawai(): bool
     {
-        return $query->where('role', self::ROLE_STUDENT);
+        return $this->role === 'pegawai';
     }
 
-    public function scopeStaff($query)
+    public function isMahasiswa(): bool
     {
-        return $query->where('role', self::ROLE_STAFF);
+        return $this->role === 'mahasiswa';
     }
 
-    public function scopeAdmins($query)
+    // ========= DENDA =========
+    public function hasUnpaidFines(): bool
     {
-        return $query->where('role', self::ROLE_ADMIN);
-    }
-    public function isAdmin()
-    {
-        return $this->role === self::ROLE_ADMIN;
-    }
-
-    public function isStaff()
-    {
-        return $this->role === self::ROLE_STAFF;
-    }
-
-    public function isStudent()
-    {
-        return $this->role === self::ROLE_STUDENT;
-    }
-
-    public function hasOverdueFines()
-    {
-        return $this->fines_balance > 0;
-    }
-
-    public function canBorrowBooks()
-    {
-        return $this->isStudent() && !$this->is_blocked && !$this->hasOverdueFines();
-    }
-
-    public function getActiveLoansCount()
-    {
-        return $this->activeLoans()->count();
-    }
-
-    public function getRoleName()
-    {
-        return match($this->role) {
-            self::ROLE_ADMIN => 'Administrator',
-            self::ROLE_STAFF => 'Pegawai Perpustakaan',
-            self::ROLE_STUDENT => 'Mahasiswa',
-            default => 'Pengguna',
-        };
+        return $this->loans()
+            ->where('fine', '>', 0)
+            ->whereNull('returned_at') // masih dipinjam
+            ->exists();
     }
 }
