@@ -52,5 +52,6 @@ class Kernel extends HttpKernel
         'mahasiswa' => \App\Http\Middleware\MahasiswaMiddleware::class,
         'guest.redirect' => \App\Http\Middleware\GuestMiddleware::class,
         'check.fines' => \App\Http\Middleware\FineMiddleware::class,
+        'role' => \App\Http\Middleware\RoleMiddleware::class,
     ];
 }

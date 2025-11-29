@@ -12,7 +12,7 @@ class BookController extends Controller
     {
         $books = Book::latest()->take(6)->get();
 
-        return view('mahasiswa.loans.homepage', compact('books'));
+        return view('homepage', compact('books'));
         // atau kalau kamu punya view lain untuk home, ganti di sini
     }
 
@@ -23,7 +23,7 @@ class BookController extends Controller
 
         if ($search = $request->input('q')) {
             $query->where('title', 'like', "%{$search}%")
-                  ->orWhere('author', 'like', "%{$search}%");
+                ->orWhere('author', 'like', "%{$search}%");
         }
 
         $books = $query->orderBy('title')->paginate(12);

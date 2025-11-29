@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Loan;
+
 
 class User extends Authenticatable
 {
@@ -14,7 +16,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role', // 'admin', 'pegawai', 'mahasiswa'
+        'role',
     ];
 
     protected $hidden = [
@@ -26,16 +28,16 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
         ];
     }
 
-    // ========= RELATIONSHIPS =========
     public function loans()
     {
         return $this->hasMany(Loan::class);
     }
 
+    // kalau kamu belum pakai Review/Notification model, boleh dihapus dua relasi ini
     public function reviews()
     {
         return $this->hasMany(Review::class);
@@ -46,28 +48,19 @@ class User extends Authenticatable
         return $this->hasMany(Notification::class);
     }
 
-    // ========= ROLE HELPERS =========
-    public function isAdmin(): bool
-    {
-        return $this->role === 'admin';
-    }
+    // ROLE helper
+    public function isAdmin()     { return $this->role === 'admin'; }
+    public function isPegawai()   { return $this->role === 'pegawai'; }
+    public function isMahasiswa() { return $this->role === 'mahasiswa'; }
 
-    public function isPegawai(): bool
-    {
-        return $this->role === 'pegawai';
-    }
-
-    public function isMahasiswa(): bool
-    {
-        return $this->role === 'mahasiswa';
-    }
-
-    // ========= DENDA =========
+    // cek denda tertunggak (dipakai mahasiswa.borrow)
     public function hasUnpaidFines(): bool
     {
         return $this->loans()
             ->where('fine', '>', 0)
-            ->whereNull('returned_at') // masih dipinjam
+            ->whereNull('returned_at')
             ->exists();
     }
+
+    
 }

@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Loan extends Model
 {
@@ -34,19 +35,10 @@ class Loan extends Model
         return $this->belongsTo(Book::class);
     }
 
-    // Hitung denda sederhana
-    public function calculateFine(): int
+    public function isOverdue(): bool
     {
-        if ($this->returned_at === null && now()->greaterThan($this->due_at)) {
-            $daysLate = $this->due_at->diffInDays(now());
-        } elseif ($this->returned_at && $this->returned_at->greaterThan($this->due_at)) {
-            $daysLate = $this->due_at->diffInDays($this->returned_at);
-        } else {
-            $daysLate = 0;
-        }
-
-        $dailyFine = $this->book->daily_fine ?? 0;
-
-        return $daysLate * $dailyFine;
+        return is_null($this->returned_at)
+            && $this->due_at
+            && now()->greaterThan($this->due_at);
     }
 }

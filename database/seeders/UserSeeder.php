@@ -10,7 +10,6 @@ class UserSeeder extends Seeder
 {
     public function run()
     {
-        // Admin
         User::create([
             'name' => 'Admin Perpus',
             'email' => 'admin@perpus.ac.id',
@@ -18,7 +17,6 @@ class UserSeeder extends Seeder
             'role' => 'admin',
         ]);
 
-        // Pegawai
         User::create([
             'name' => 'Pegawai Perpus',
             'email' => 'pegawai@perpus.ac.id',
@@ -26,7 +24,6 @@ class UserSeeder extends Seeder
             'role' => 'pegawai',
         ]);
 
-        // Mahasiswa
         User::create([
             'name' => 'Mahasiswa 1',
             'email' => 'mhs1@perpus.ac.id',
