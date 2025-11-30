@@ -75,6 +75,19 @@ Route::prefix('admin')
 
         // Book Management
         Route::resource('books', BookManagementController::class);
+
+        // Loans Management
+        Route::get('/loans', [AdminDashboardController::class, 'loans'])->name('loans.index');
+        Route::post('/loans/{loan}/approve', [AdminDashboardController::class, 'approveLoan'])->name('loans.approve');
+        Route::post('/loans/{loan}/reject', [AdminDashboardController::class, 'rejectLoan'])->name('loans.reject');
+        Route::post('/loans/{loan}/return', [AdminDashboardController::class, 'returnBook'])->name('loans.return');
+
+        // Fines Management - Perbaiki parameter menjadi loan
+        Route::get('/fines', [AdminDashboardController::class, 'fines'])->name('fines.index');
+        Route::post('/fines/{loan}/pay', [AdminDashboardController::class, 'markAsPaid'])->name('fines.pay');
+
+        // Settings
+        Route::get('/settings', [AdminDashboardController::class, 'settings'])->name('settings');
     });
 
 
@@ -91,12 +104,22 @@ Route::prefix('pegawai')
         Route::get('/dashboard', [PegawaiDashboardController::class, 'index'])
             ->name('dashboard');
 
-        // Approve/Reject Loans
+        // Loans Management
+        Route::get('/loans', [PegawaiDashboardController::class, 'loans'])->name('loans.index');
         Route::post('/loans/{loan}/approve', [PegawaiDashboardController::class, 'approveLoan'])
             ->name('loans.approve');
-            
         Route::post('/loans/{loan}/reject', [PegawaiDashboardController::class, 'rejectLoan'])
             ->name('loans.reject');
+        Route::post('/loans/{loan}/return', [PegawaiDashboardController::class, 'returnBook'])
+            ->name('loans.return');
+
+        // Books Management
+        Route::get('/books', [PegawaiDashboardController::class, 'books'])->name('books.index');
+        Route::get('/books/create', [PegawaiDashboardController::class, 'createBook'])->name('books.create');
+        Route::post('/books', [PegawaiDashboardController::class, 'storeBook'])->name('books.store');
+
+        // Fines Management
+        Route::get('/fines', [PegawaiDashboardController::class, 'fines'])->name('fines.index');
     });
 
 
