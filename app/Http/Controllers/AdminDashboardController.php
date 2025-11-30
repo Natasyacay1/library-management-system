@@ -10,6 +10,7 @@ use App\Models\Loan;
 use App\Models\Fine;
 use App\Models\Notification;
 use Carbon\Carbon;
+use App\Models\Review;
 
 class AdminDashboardController extends Controller
 {
@@ -81,13 +82,13 @@ class AdminDashboardController extends Controller
     {
         // Jika menggunakan model Fine
         // $fines = Fine::with(['user', 'loan'])->where('status', 'unpaid')->latest()->paginate(10);
-        
+
         // Jika tidak ada model Fine, gunakan data dari Loan
         $fines = Loan::where('fine', '>', 0)
-                    ->with(['user', 'book'])
-                    ->latest()
-                    ->paginate(10);
-                    
+            ->with(['user', 'book'])
+            ->latest()
+            ->paginate(10);
+
         return view('admin.fines.index', compact('fines'));
     }
 
@@ -219,6 +220,59 @@ class AdminDashboardController extends Controller
         }
 
         return $activities;
+    }
+
+    // Tambahkan methods ini ke AdminDashboardController
+    public function reviews()
+    {
+        $reviews = \App\Models\Review::with(['user', 'book'])
+            ->latest()
+            ->paginate(10);
+
+        return view('admin.reviews.index', compact('reviews'));
+    }
+
+    public function deleteReview(Review $review)
+    {
+        $review->delete();
+
+        return redirect()->route('admin.reviews.index')
+            ->with('success', 'Review berhasil dihapus.');
+    }
+
+    public function notifications()
+    {
+        $notifications = \App\Models\Notification::with('user')
+            ->latest()
+            ->paginate(20);
+
+        return view('admin.notifications.index', compact('notifications'));
+    }
+
+    public function sendBulkNotification(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'message' => 'required|string',
+            'type' => 'required|in:system_alert,info,warning',
+            'target_role' => 'required|in:all,mahasiswa,staff'
+        ]);
+
+        $users = \App\Models\User::when($request->target_role !== 'all', function ($query) use ($request) {
+            return $query->where('role', $request->target_role);
+        })->get();
+
+        foreach ($users as $user) {
+            \App\Models\Notification::create([
+                'user_id' => $user->id,
+                'type' => $request->type,
+                'title' => $request->title,
+                'message' => $request->message,
+                'data' => ['bulk_notification' => true]
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Notifikasi berhasil dikirim ke ' . $users->count() . ' pengguna.');
     }
 
     public function systemStats()

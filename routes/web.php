@@ -8,6 +8,8 @@ use App\Http\Controllers\MahasiswaDashboardController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\BookManagementController;
 use App\Http\Controllers\LoanController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,6 +56,30 @@ Route::middleware(['auth', 'verified'])->group(function () {
             default     => redirect()->route('home'),
         };
     })->name('dashboard');
+
+    /*
+    |--------------------------------------------------------------------------
+    | NOTIFICATION ROUTES - Untuk semua role yang terautentikasi
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        Route::get('/', [NotificationController::class, 'index'])->name('index');
+        Route::post('/{notification}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('mark-read');
+        Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('mark-all-read');
+        Route::get('/recent', [NotificationController::class, 'getRecent'])->name('recent');
+        Route::get('/unread-count', [NotificationController::class, 'getUnreadCount'])->name('unread-count');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | REVIEW ROUTES - Hanya untuk mahasiswa
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware(['role:mahasiswa'])->group(function () {
+        Route::post('/books/{book}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+        Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
+        Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+    });
 });
 
 
@@ -86,6 +112,14 @@ Route::prefix('admin')
         Route::get('/fines', [AdminDashboardController::class, 'fines'])->name('fines.index');
         Route::post('/fines/{loan}/pay', [AdminDashboardController::class, 'markAsPaid'])->name('fines.pay');
 
+        // Reviews Management (Admin bisa lihat dan hapus review)
+        Route::get('/reviews', [AdminDashboardController::class, 'reviews'])->name('reviews.index');
+        Route::delete('/reviews/{review}', [AdminDashboardController::class, 'deleteReview'])->name('reviews.destroy');
+
+        // Notifications Management
+        Route::get('/notifications', [AdminDashboardController::class, 'notifications'])->name('notifications.index');
+        Route::post('/notifications/send-bulk', [AdminDashboardController::class, 'sendBulkNotification'])->name('notifications.send-bulk');
+
         // Settings
         Route::get('/settings', [AdminDashboardController::class, 'settings'])->name('settings');
     });
@@ -117,6 +151,9 @@ Route::prefix('pegawai')
         Route::get('/books', [PegawaiDashboardController::class, 'books'])->name('books.index');
         Route::get('/books/create', [PegawaiDashboardController::class, 'createBook'])->name('books.create');
         Route::post('/books', [PegawaiDashboardController::class, 'storeBook'])->name('books.store');
+
+        // Reviews Management (Pegawai bisa lihat review)
+        Route::get('/reviews', [PegawaiDashboardController::class, 'reviews'])->name('reviews.index');
 
         // Fines Management
         Route::get('/fines', [PegawaiDashboardController::class, 'fines'])->name('fines.index');
@@ -163,4 +200,21 @@ Route::prefix('mahasiswa')
         // Katalog Buku untuk Mahasiswa
         Route::get('/books', [MahasiswaDashboardController::class, 'booksCatalog'])
             ->name('books.index');
+
+        // Reviews & Ratings (Mahasiswa)
+        Route::get('/reviews', [MahasiswaDashboardController::class, 'myReviews'])
+            ->name('reviews.my-reviews');
+
+        // Notifications (Mahasiswa)
+        Route::get('/notifications', [MahasiswaDashboardController::class, 'notifications'])
+            ->name('notifications.index');
     });
+
+
+/*
+|--------------------------------------------------------------------------
+| PUBLIC REVIEW ROUTES - Bisa diakses tanpa login untuk melihat review
+|--------------------------------------------------------------------------
+*/
+Route::get('/books/{book}/reviews', [ReviewController::class, 'index'])->name('reviews.index');
+Route::get('/reviews/latest', [ReviewController::class, 'latest'])->name('reviews.latest');

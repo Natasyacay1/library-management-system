@@ -2,27 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Review extends Model
 {
-    use HasFactory;
+    protected $fillable = ['user_id', 'book_id', 'rating', 'comment'];
 
-    protected $fillable = [
-        'user_id',
-        'book_id',
-        'rating',
-        'comment',
-        'is_approved'
-    ];
-
-    protected $casts = [
-        'rating' => 'integer',
-        'is_approved' => 'boolean',
-    ];
-
-    // Relationships
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -33,31 +18,15 @@ class Review extends Model
         return $this->belongsTo(Book::class);
     }
 
-    // Scopes
-    public function scopeApproved($query)
+    // Scope untuk rating tertinggi
+    public function scopeHighestRated($query)
     {
-        return $query->where('is_approved', true);
+        return $query->orderBy('rating', 'desc');
     }
 
-    public function scopeForBook($query, $bookId)
+    // Scope untuk buku dengan review
+    public function scopeWithReviews($query)
     {
-        return $query->where('book_id', $bookId);
-    }
-
-    public function scopeRecent($query)
-    {
-        return $query->orderBy('created_at', 'desc');
-    }
-
-    // Methods
-    public function approve()
-    {
-        $this->is_approved = true;
-        $this->save();
-    }
-
-    public function reject()
-    {
-        $this->delete();
+        return $query->whereHas('reviews');
     }
 }

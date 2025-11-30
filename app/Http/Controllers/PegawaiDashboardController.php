@@ -7,16 +7,31 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Loan;
 use App\Models\Book;
 use App\Models\User;
+use Carbon\Carbon;
 
 class PegawaiDashboardController extends Controller
 {
     public function index()
     {
         // Statistik untuk dashboard pegawai
-        $pendingLoans = Loan::where('status', 'pending')->count();
-        $activeLoans = Loan::whereNull('returned_at')->count();
+        $pendingLoansCount = Loan::where('status', 'pending')->count();
+        $activeLoansCount = Loan::where('status', 'approved')
+            ->whereNull('returned_at')
+            ->count();
         $totalBooks = Book::count();
         $totalMembers = User::where('role', 'mahasiswa')->count();
+        
+        // Hitung keterlambatan
+        $overdueCount = Loan::where('status', 'approved')
+            ->whereNull('returned_at')
+            ->where('due_at', '<', Carbon::now())
+            ->count();
+
+        // Pengembalian hari ini
+        $todayReturns = Loan::where('status', 'approved')
+            ->whereNull('returned_at')
+            ->whereDate('due_at', Carbon::today())
+            ->count();
 
         // Peminjaman pending untuk approval
         $pendingApprovals = Loan::with(['user', 'book'])
@@ -26,42 +41,173 @@ class PegawaiDashboardController extends Controller
             ->get();
 
         // Peminjaman aktif
-        $activeBorrowings = Loan::with(['user', 'book'])
+        $activeLoans = Loan::with(['user', 'book'])
+            ->where('status', 'approved')
             ->whereNull('returned_at')
             ->orderBy('due_at', 'asc')
             ->take(5)
             ->get();
 
         return view('pegawai.dashboard', compact(
-            'pendingLoans',
-            'activeLoans', 
+            'pendingLoansCount',
+            'activeLoansCount', 
             'totalBooks',
             'totalMembers',
+            'overdueCount',
+            'todayReturns',
             'pendingApprovals',
-            'activeBorrowings'
+            'activeLoans'
         ));
     }
 
-    public function approveLoan(Loan $loan)
-    {
-        $loan->update(['status' => 'approved']);
-        return back()->with('success', 'Peminjaman berhasil disetujui.');
-    }
-
-    public function rejectLoan(Loan $loan)
-    {
-        $loan->update(['status' => 'rejected']);
-        // Kembalikan stok buku
-        $loan->book->increment('stock');
-        return back()->with('success', 'Peminjaman ditolak.');
-    }
-
-    public function manageLoans()
+    public function loans()
     {
         $loans = Loan::with(['user', 'book'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
         return view('pegawai.loans.index', compact('loans'));
+    }
+
+    public function approveLoan(Request $request, $loan)
+    {
+        try {
+            $loan = Loan::findOrFail($loan);
+            
+            // Cek apakah buku masih tersedia
+            if ($loan->book->stock < 1) {
+                return redirect()->back()->with('error', 'Stok buku tidak tersedia.');
+            }
+
+            $loan->update([
+                'status' => 'approved',
+                'approved_at' => now(),
+                'approved_by' => Auth::id(),
+                'due_at' => now()->addDays(14) // 2 minggu
+            ]);
+
+            // Kurangi stok buku
+            $loan->book->decrement('stock');
+
+            return redirect()->back()->with('success', 'Peminjaman berhasil disetujui!');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function rejectLoan(Request $request, $loan)
+    {
+        try {
+            $loan = Loan::findOrFail($loan);
+            
+            $loan->update([
+                'status' => 'rejected',
+                'rejected_at' => now(),
+                'rejected_by' => Auth::id()
+            ]);
+
+            return redirect()->back()->with('success', 'Peminjaman berhasil ditolak.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function returnBook(Request $request, $loan)
+    {
+        try {
+            $loan = Loan::findOrFail($loan);
+            
+            $loan->update([
+                'returned_at' => now()
+            ]);
+
+            // Update stock buku
+            $loan->book->increment('stock');
+
+            return redirect()->back()->with('success', 'Buku berhasil dikembalikan.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function books()
+    {
+        $books = Book::latest()->paginate(10);
+        return view('pegawai.books.index', compact('books'));
+    }
+
+    public function createBook()
+    {
+        return view('pegawai.books.create');
+    }
+
+    public function storeBook(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'author' => 'required|string|max:255',
+            'isbn' => 'required|string|max:20|unique:books',
+            'publisher' => 'required|string|max:255',
+            'year' => 'required|integer|min:1900|max:' . date('Y'),
+            'stock' => 'required|integer|min:1',
+            'description' => 'nullable|string',
+            'cover' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $bookData = $request->all();
+
+        if ($request->hasFile('cover')) {
+            $coverPath = $request->file('cover')->store('book-covers', 'public');
+            $bookData['cover'] = $coverPath;
+        }
+
+        Book::create($bookData);
+
+        return redirect()->route('pegawai.books.index')
+            ->with('success', 'Buku berhasil ditambahkan.');
+    }
+
+    public function fines()
+    {
+        $overdueLoans = Loan::with(['user', 'book'])
+            ->where('status', 'approved')
+            ->whereNull('returned_at')
+            ->where('due_at', '<', Carbon::now())
+            ->get();
+
+        return view('pegawai.fines.index', compact('overdueLoans'));
+    }
+
+    public function reviews()
+    {
+        $reviews = \App\Models\Review::with(['user', 'book'])
+            ->latest()
+            ->paginate(10);
+        
+        return view('pegawai.reviews.index', compact('reviews'));
+    }
+
+    public function extendLoan(Request $request, $loan)
+    {
+        try {
+            $loan = Loan::findOrFail($loan);
+            
+            $request->validate([
+                'extended_days' => 'required|integer|min:1|max:7'
+            ]);
+
+            $loan->update([
+                'due_at' => Carbon::parse($loan->due_at)->addDays($request->extended_days),
+                'extended' => true
+            ]);
+
+            return redirect()->back()->with('success', 'Peminjaman berhasil diperpanjang.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 }

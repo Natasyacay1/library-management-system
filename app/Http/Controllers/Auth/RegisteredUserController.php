@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
@@ -29,21 +30,36 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'student_id' => ['required', 'string', 'max:20', 'unique:'.User::class],
-            'phone' => ['nullable', 'string', 'max:15'],
+            'phone' => ['required', 'string', 'max:15'],
+            'role' => ['required', 'string', 'in:mahasiswa,staff'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'nim' => ['required_if:role,mahasiswa', 'nullable', 'string', 'max:20', 'unique:'.User::class],
+            'faculty' => ['required_if:role,mahasiswa', 'nullable', 'string', 'max:100'],
+        ], [
+            'nim.required_if' => 'NIM wajib diisi untuk mahasiswa.',
+            'faculty.required_if' => 'Fakultas wajib diisi untuk mahasiswa.',
+            'nim.unique' => 'NIM sudah terdaftar.',
         ]);
 
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $validated = $validator->validated();
+
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'mahasiswa', // Default role untuk registrasi public
-            'student_id' => $request->student_id,
-            'phone' => $request->phone,
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+            'password' => Hash::make($validated['password']),
+            'role' => $validated['role'],
+            'nim' => $validated['nim'] ?? null,
+            'faculty' => $validated['faculty'] ?? null,
         ]);
 
         event(new Registered($user));
