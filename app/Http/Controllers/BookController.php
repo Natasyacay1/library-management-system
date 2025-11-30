@@ -7,16 +7,13 @@ use Illuminate\Http\Request;
 
 class BookController extends Controller
 {
-    // Home guest
     public function homepage()
     {
         $books = Book::latest()->take(6)->get();
 
         return view('homepage', compact('books'));
-        // atau kalau kamu punya view lain untuk home, ganti di sini
     }
 
-    // /books -> katalog
     public function index(Request $request)
     {
         $query = Book::query();
@@ -31,7 +28,6 @@ class BookController extends Controller
         return view('books.catalog', compact('books'));
     }
 
-    // /books/{book}
     public function show(Book $book)
     {
         $book->load('reviews.user');
