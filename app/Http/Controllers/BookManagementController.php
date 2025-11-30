@@ -4,83 +4,101 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
 
 class BookManagementController extends Controller
 {
-    public function index(Request $request): View
+    public function index()
     {
-        $query = Book::query();
-
-        if ($search = $request->input('q')) {
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                ->orWhere('author', 'like', "%{$search}%");
-            });
-        }
-
-        $books = $query->latest()->paginate(10);
-
-        return view('books.index', compact('books'));
+        $books = Book::orderBy('created_at', 'desc')->paginate(10);
+        $user = Auth::user();
+        
+        return view('admin.books.index', compact('books', 'user'));
     }
 
-    public function create(): View
+    public function create()
     {
-        return view('books.create');
+        $user = Auth::user();
+        return view('admin.books.create', compact('user'));
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
-        $data = $request->validate([
-            'title'        => ['required', 'string', 'max:255'],
-            'author'       => ['required', 'string', 'max:255'],
-            'publisher'    => ['nullable', 'string', 'max:255'],
-            'year'         => ['nullable', 'integer'],
-            'category'     => ['nullable', 'string', 'max:255'],
-            'stock'        => ['required', 'integer', 'min:0'],
-            'max_loan_days'=> ['required', 'integer', 'min:1'],
-            'daily_fine'   => ['required', 'integer', 'min:0'],
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'author' => 'required|string|max:255',
+            'isbn' => 'required|string|max:20|unique:books',
+            'publisher' => 'required|string|max:255',
+            'year' => 'required|integer|min:1900|max:' . date('Y'),
+            'category' => 'required|string|max:255',
+            'stock' => 'required|integer|min:0',
+            'max_loan_days' => 'required|integer|min:1',
+            'daily_fine' => 'required|integer|min:0',
+            'description' => 'nullable|string',
         ]);
 
-        Book::create($data);
-
-        return redirect()
-            ->route('admin.books.index')
-            ->with('status', 'Buku berhasil ditambahkan.');
-    }
-
-    public function edit(Book $book): View
-    {
-        return view('books.edit', compact('book'));
-    }
-
-    public function update(Request $request, Book $book): RedirectResponse
-    {
-        $data = $request->validate([
-            'title'        => ['required', 'string', 'max:255'],
-            'author'       => ['required', 'string', 'max:255'],
-            'publisher'    => ['nullable', 'string', 'max:255'],
-            'year'         => ['nullable', 'integer'],
-            'category'     => ['nullable', 'string', 'max:255'],
-            'stock'        => ['required', 'integer', 'min:0'],
-            'max_loan_days'=> ['required', 'integer', 'min:1'],
-            'daily_fine'   => ['required', 'integer', 'min:0'],
+        Book::create([
+            'title' => $request->title,
+            'author' => $request->author,
+            'isbn' => $request->isbn,
+            'publisher' => $request->publisher,
+            'year' => $request->year,
+            'category' => $request->category,
+            'stock' => $request->stock,
+            'max_loan_days' => $request->max_loan_days,
+            'daily_fine' => $request->daily_fine,
+            'description' => $request->description,
         ]);
 
-        $book->update($data);
-
-        return redirect()
-            ->route('admin.books.index')
-            ->with('status', 'Data buku berhasil diperbarui.');
+        return redirect()->route('admin.books.index')->with('success', 'Buku berhasil ditambahkan.');
     }
 
-    public function destroy(Book $book): RedirectResponse
+    public function show(Book $book)
+    {
+        $user = Auth::user();
+        return view('admin.books.show', compact('book', 'user'));
+    }
+
+    public function edit(Book $book)
+    {
+        $user = Auth::user();
+        return view('admin.books.edit', compact('book', 'user'));
+    }
+
+    public function update(Request $request, Book $book)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'author' => 'required|string|max:255',
+            'isbn' => 'required|string|max:20|unique:books,isbn,' . $book->id,
+            'publisher' => 'required|string|max:255',
+            'year' => 'required|integer|min:1900|max:' . date('Y'),
+            'category' => 'required|string|max:255',
+            'stock' => 'required|integer|min:0',
+            'max_loan_days' => 'required|integer|min:1',
+            'daily_fine' => 'required|integer|min:0',
+            'description' => 'nullable|string',
+        ]);
+
+        $book->update([
+            'title' => $request->title,
+            'author' => $request->author,
+            'isbn' => $request->isbn,
+            'publisher' => $request->publisher,
+            'year' => $request->year,
+            'category' => $request->category,
+            'stock' => $request->stock,
+            'max_loan_days' => $request->max_loan_days,
+            'daily_fine' => $request->daily_fine,
+            'description' => $request->description,
+        ]);
+
+        return redirect()->route('admin.books.index')->with('success', 'Buku berhasil diperbarui.');
+    }
+
+    public function destroy(Book $book)
     {
         $book->delete();
-
-        return redirect()
-            ->route('admin.books.index')
-            ->with('status', 'Buku berhasil dihapus.');
+        return redirect()->route('admin.books.index')->with('success', 'Buku berhasil dihapus.');
     }
 }
