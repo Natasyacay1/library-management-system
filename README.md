@@ -1,66 +1,262 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📚 Sistem Manajemen Perpustakaan Digital
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistem manajemen perpustakaan digital berbasis web yang dibangun dengan Laravel framework. Mendukung multi-role user (Admin, Pegawai, Mahasiswa) dengan fitur lengkap untuk mengelola koleksi buku, peminjaman, dan ulasan.
 
-## About Laravel
+## 🚀 Fitur Utama
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### 👨‍💼 Role Admin
+- **Dashboard** admin dengan statistik lengkap
+- **Manajemen User** - kelola semua pengguna
+- **Manajemen Buku** - CRUD lengkap koleksi buku
+- **Manajemen Peminjaman** - approve/reject/tracking
+- **Kelola Denda** - sistem denda otomatis
+- **Manajemen Review** - moderasi ulasan buku
+- **Notifikasi Sistem** - kirim notifikasi massal
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 👨‍💻 Role Pegawai
+- **Dashboard** dengan overview peminjaman
+- **Approve/Reject** permintaan peminjaman
+- **Kelola Buku** - tambah dan edit koleksi
+- **Tracking Peminjaman** - monitor status buku
+- **Kelola Denda** - hitung dan kelola keterlambatan
+- **Lihat Review** - monitor ulasan pembaca
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 🎓 Role Mahasiswa
+- **Dashboard** personal dengan riwayat
+- **Peminjaman Buku** - ajukan pinjam buku
+- **Katalog Buku** - jelajahi koleksi
+- **Sistem Rating & Review** - beri ulasan buku
+- **Riwayat Peminjaman** - lihat history
+- **Notifikasi** - dapatkan pemberitahuan
+- **Kelola Profil** - update data pribadi
 
-## Learning Laravel
+## 🛠 Teknologi yang Digunakan
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **Backend**: Laravel 10.x
+- **Frontend**: Tailwind CSS, Blade Templates
+- **Database**: MySQL
+- **Authentication**: Laravel Breeze
+- **Icons**: Font Awesome 6
+- **Fonts**: Inter Font Family
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## 📦 Instalasi dan Setup
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Prerequisites
+- PHP 8.0+
+- Composer
+- MySQL 5.7+
+- Node.js & NPM
 
-## Laravel Sponsors
+### Step-by-Step Installation
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+1. **Clone Repository**
+```bash
+git clone [repository-url]
+cd library-management-system
+Install Dependencies
 
-### Premium Partners
+bash
+composer install
+npm install
+Setup Environment
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+bash
+cp .env.example .env
+php artisan key:generate
+Konfigurasi Database
+Edit file .env:
 
-## Contributing
+env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=library_db
+DB_USERNAME=root
+DB_PASSWORD=
+Jalankan Migration & Seeder
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+bash
+php artisan migrate --seed
+Build Assets
 
-## Code of Conduct
+bash
+npm run build
+Jalankan Server
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+bash
+php artisan serve
+Akses aplikasi di: http://localhost:8000
 
-## Security Vulnerabilities
+👥 Default User Accounts
+Admin
+Email: admin@perpus.com
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Password: password
 
-## License
+Role: admin
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Pegawai
+Email: pegawai@perpus.com
+
+Password: password
+
+Role: pegawai
+
+Mahasiswa
+Email: mahasiswa@perpus.com
+
+Password: password
+
+Role: mahasiswa
+
+🗂 Struktur Project
+text
+library-management-system/
+├── app/
+│   ├── Http/Controllers/
+│   │   ├── AdminDashboardController.php
+│   │   ├── PegawaiDashboardController.php
+│   │   └── MahasiswaDashboardController.php
+│   ├── Models/
+│   │   ├── User.php
+│   │   ├── Book.php
+│   │   ├── Loan.php
+│   │   ├── Review.php
+│   │   └── Notification.php
+│   └── Services/
+│       └── NotificationService.php
+├── resources/views/
+│   ├── admin/
+│   ├── pegawai/
+│   │   ├── dashboard.blade.php
+│   │   ├── books/
+│   │   ├── loans/
+│   │   ├── fines/
+│   │   └── reviews/
+│   └── mahasiswa/
+├── routes/
+│   └── web.php
+└── database/
+    ├── migrations/
+    └── seeders/
+🔧 Fitur Khusus
+Sistem Rating & Review
+Rating 1-5 bintang
+
+Komentar ulasan
+
+Satu user satu review per buku
+
+Average rating otomatis
+
+Notifikasi Real-time
+Bell notification di navbar
+
+Jenis: due reminder, overdue, new book, system
+
+Mark as read functionality
+
+Auto-cleanup old notifications
+
+Automation Commands
+bash
+# Pengingat jatuh tempo
+php artisan notifications:send-due-reminders
+
+# Notifikasi keterlambatan  
+php artisan notifications:send-overdue-alerts
+
+# Cleanup notifikasi lama
+php artisan notifications:cleanup
+Middleware & Authorization
+Role-based access control
+
+Custom middleware: role:admin, role:pegawai, role:mahasiswa
+
+Policy untuk Review & Notification
+
+🚀 Cara Menjalankan
+Development Mode
+bash
+php artisan serve
+npm run dev
+Production Mode
+bash
+php artisan config:cache
+php artisan route:cache  
+php artisan view:cache
+npm run build
+Scheduled Tasks (Cron Jobs)
+Tambahkan ke crontab:
+
+bash
+* * * * * cd /path-to-project && php artisan schedule:run >> /dev/null 2>&1
+📊 Database Schema
+Tables:
+users - Data pengguna dengan role
+
+books - Koleksi buku
+
+loans - Data peminjaman
+
+reviews - Rating dan ulasan
+
+notifications - Sistem notifikasi
+
+Relationships:
+User → Loans (One to Many)
+
+Book → Loans (One to Many)
+
+User → Reviews (One to Many)
+
+Book → Reviews (One to Many)
+
+User → Notifications (One to Many)
+
+🐛 Troubleshooting
+Common Issues:
+View not found error
+
+bash
+php artisan cache:clear
+php artisan view:clear
+Route not defined
+
+bash
+php artisan route:clear
+php artisan route:list
+Class not found
+
+bash
+composer dump-autoload
+Migration error
+
+bash
+php artisan migrate:fresh --seed
+
+🤝 Kontribusi
+Fork repository
+
+Create feature branch (git checkout -b feature/AmazingFeature)
+
+Commit changes (git commit -m 'Add some AmazingFeature')
+
+Push to branch (git push origin feature/AmazingFeature)
+
+Open Pull Request
+
+📄 License
+Project ini menggunakan lisensi MIT - lihat file LICENSE untuk detail.
+
+👨‍💻 Author
+Natasya Bokek
+
+💡 Tips: Untuk development, pastikan menjalankan php artisan serve dan npm run dev secara bersamaan untuk hot-reload.
+
+📞 Support: Jika mengalami masalah, buka issue di repository atau hubungi developer.
+
+🔄 Update Terakhir: December 2024
+
+Sistem Perpustakaan Digital - Modern, Efisien, dan User-Friendly
+
