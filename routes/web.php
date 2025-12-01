@@ -112,6 +112,14 @@ Route::prefix('admin')
         Route::get('/fines', [AdminDashboardController::class, 'fines'])->name('fines.index');
         Route::post('/fines/{loan}/pay', [AdminDashboardController::class, 'markAsPaid'])->name('fines.pay');
 
+        Route::resource('users', UserManagementController::class);
+        
+        // TAMBAH ROUTE UNTUK ACTIVATE/DEACTIVATE
+        Route::post('/users/{user}/activate', [UserManagementController::class, 'activate'])
+            ->name('users.activate');
+        Route::post('/users/{user}/deactivate', [UserManagementController::class, 'deactivate'])
+            ->name('users.deactivate');
+
         // Reviews Management (Admin bisa lihat dan hapus review)
         Route::get('/reviews', [AdminDashboardController::class, 'reviews'])->name('reviews.index');
         Route::delete('/reviews/{review}', [AdminDashboardController::class, 'deleteReview'])->name('reviews.destroy');
@@ -156,6 +164,14 @@ Route::prefix('pegawai')
             ->name('loans.reject');
         Route::post('/loans/{loan}/return', [PegawaiDashboardController::class, 'returnBook'])
             ->name('loans.return');
+                    Route::get('/books', [PegawaiDashboardController::class, 'books'])->name('books.index');
+        Route::get('/books/create', [PegawaiDashboardController::class, 'createBook'])->name('books.create');
+        Route::post('/books', [PegawaiDashboardController::class, 'storeBook'])->name('books.store');
+        
+        // Route untuk edit, update, dan delete - PASTIKAN ADA
+        Route::get('/books/{book}/edit', [PegawaiDashboardController::class, 'editBook'])->name('books.edit');
+        Route::put('/books/{book}', [PegawaiDashboardController::class, 'updateBook'])->name('books.update');
+        Route::delete('/books/{book}', [PegawaiDashboardController::class, 'destroyBook'])->name('books.destroy');
 
         // Reviews Management (Pegawai bisa lihat review)
         Route::get('/reviews', [PegawaiDashboardController::class, 'reviews'])->name('reviews.index');

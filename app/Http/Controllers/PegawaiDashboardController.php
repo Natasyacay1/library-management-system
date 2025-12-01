@@ -85,16 +85,31 @@ class PegawaiDashboardController extends Controller
 
     public function destroyBook(Book $book)
     {
-        // Cek apakah buku sedang dipinjam
-        if ($book->activeLoans()->count() > 0) {
+        try {
+            // Cek apakah buku sedang dipinjam
+            // Gunakan query langsung untuk menghindari error relationship
+            $hasActiveLoans = false;
+
+            // Cek apakah model Loan ada
+            if (class_exists(\App\Models\Loan::class)) {
+                $hasActiveLoans = \App\Models\Loan::where('book_id', $book->id)
+                    ->whereIn('status', ['active', 'pending', 'overdue'])
+                    ->exists();
+            }
+
+            if ($hasActiveLoans) {
+                return redirect()->route('pegawai.books.index')
+                    ->with('error', 'Tidak dapat menghapus buku "' . $book->title . '" karena sedang dipinjam!');
+            }
+
+            $book->delete();
+
             return redirect()->route('pegawai.books.index')
-                ->with('error', 'Tidak dapat menghapus buku yang sedang dipinjam!');
+                ->with('success', 'Buku "' . $book->title . '" berhasil dihapus!');
+        } catch (\Exception $e) {
+            return redirect()->route('pegawai.books.index')
+                ->with('error', 'Gagal menghapus buku: ' . $e->getMessage());
         }
-
-        $book->delete();
-
-        return redirect()->route('pegawai.books.index')
-            ->with('success', 'Buku berhasil dihapus!');
     }
 
     public function loans()

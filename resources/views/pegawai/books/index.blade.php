@@ -89,6 +89,12 @@
             color: white;
             border-color: #D24C49;
         }
+        .action-btn {
+            transition: all 0.2s ease;
+        }
+        .action-btn:hover {
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body class="bg-[#FAF4EF] min-h-full">
@@ -157,6 +163,20 @@
                     <div>
                         <p class="text-[#3A2E2A] font-semibold">{{ session('success') }}</p>
                         <p class="text-[#3A2E2A]/70 text-sm mt-1">Perubahan berhasil disimpan</p>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="bg-gradient-to-r from-red-50 to-rose-50 border-l-4 border-[#DC2626] rounded-lg p-4 mb-6 animate-fadeIn">
+                <div class="flex items-center">
+                    <div class="bg-[#DC2626] text-white p-2 rounded-lg mr-3">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div>
+                        <p class="text-[#3A2E2A] font-semibold">{{ session('error') }}</p>
+                        <p class="text-[#3A2E2A]/70 text-sm mt-1">Terjadi kesalahan</p>
                     </div>
                 </div>
             </div>
@@ -355,21 +375,27 @@
                                     </td>
                                     <td class="px-6 py-5">
                                         <div class="flex space-x-2">
-                                            <a href="#" 
-                                               class="btn-warning text-white px-3 py-1.5 rounded-lg flex items-center text-sm">
+                                            <!-- Edit Button -->
+                                            <a href="{{ route('pegawai.books.edit', $book) }}" 
+                                               class="btn-warning text-white px-3 py-1.5 rounded-lg flex items-center text-sm action-btn">
                                                 <i class="fas fa-edit mr-1"></i> Edit
                                             </a>
-                                            <form action="#" method="POST" class="inline">
+                                            
+                                            <!-- Delete Button -->
+                                            <form action="{{ route('pegawai.books.destroy', $book) }}" method="POST" class="inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" 
-                                                        onclick="return confirm('Hapus buku ini?')"
-                                                        class="btn-danger text-white px-3 py-1.5 rounded-lg flex items-center text-sm">
+                                                        onclick="return confirmDelete('{{ addslashes($book->title) }}')"
+                                                        class="btn-danger text-white px-3 py-1.5 rounded-lg flex items-center text-sm action-btn">
                                                     <i class="fas fa-trash mr-1"></i> Hapus
                                                 </button>
                                             </form>
-                                            <a href="#" 
-                                               class="bg-gradient-to-r from-[#3A2E2A] to-[#2B211E] text-white px-3 py-1.5 rounded-lg flex items-center text-sm">
+                                            
+                                            <!-- View Button -->
+                                            <a href="{{ route('books.show', $book) }}" 
+                                               class="bg-gradient-to-r from-[#3A2E2A] to-[#2B211E] text-white px-3 py-1.5 rounded-lg flex items-center text-sm action-btn"
+                                               target="_blank">
                                                 <i class="fas fa-eye mr-1"></i> Lihat
                                             </a>
                                         </div>
@@ -383,37 +409,74 @@
                 <!-- Pagination -->
                 @if($books->hasPages())
                     <div class="px-6 py-4 border-t border-[#EEC8A3]">
-                        <div class="flex justify-between items-center">
+                        <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
                             <div class="text-sm text-[#3A2E2A]/70">
-                                Halaman {{ $books->currentPage() }} dari {{ $books->lastPage() }}
+                                Menampilkan {{ $books->firstItem() }} - {{ $books->lastItem() }} dari {{ $books->total() }} buku
                             </div>
-                            <div class="flex space-x-2">
+                            <div class="flex items-center space-x-2">
                                 @if($books->onFirstPage())
-                                    <span class="pagination-link px-3 py-2 rounded-lg text-[#3A2E2A]/50 cursor-not-allowed">
-                                        <i class="fas fa-chevron-left mr-1"></i> Sebelumnya
+                                    <span class="pagination-link px-4 py-2 rounded-lg text-[#3A2E2A]/50 cursor-not-allowed flex items-center">
+                                        <i class="fas fa-chevron-left mr-2"></i> Sebelumnya
                                     </span>
                                 @else
                                     <a href="{{ $books->previousPageUrl() }}" 
-                                       class="pagination-link px-3 py-2 rounded-lg text-[#3A2E2A] hover:text-[#D24C49] transition">
-                                        <i class="fas fa-chevron-left mr-1"></i> Sebelumnya
+                                       class="pagination-link px-4 py-2 rounded-lg text-[#3A2E2A] hover:text-[#D24C49] transition flex items-center">
+                                        <i class="fas fa-chevron-left mr-2"></i> Sebelumnya
                                     </a>
                                 @endif
                                 
-                                @foreach(range(1, min(5, $books->lastPage())) as $page)
+                                <!-- Page Numbers -->
+                                @php
+                                    $current = $books->currentPage();
+                                    $last = $books->lastPage();
+                                    $start = max(1, $current - 2);
+                                    $end = min($last, $current + 2);
+                                    
+                                    if($start > 1) {
+                                        $start = max(1, $current - 1);
+                                        $end = min($last, $current + 1);
+                                    }
+                                    
+                                    if($end == $last && $start > 1) {
+                                        $start = max(1, $last - 2);
+                                    }
+                                @endphp
+                                
+                                @if($start > 1)
+                                    <a href="{{ $books->url(1) }}" 
+                                       class="pagination-link w-10 h-10 flex items-center justify-center rounded-lg text-[#3A2E2A] hover:text-[#D24C49]">
+                                        1
+                                    </a>
+                                    @if($start > 2)
+                                        <span class="text-[#3A2E2A]/50">...</span>
+                                    @endif
+                                @endif
+                                
+                                @for($page = $start; $page <= $end; $page++)
                                     <a href="{{ $books->url($page) }}" 
-                                       class="pagination-link w-10 h-10 flex items-center justify-center rounded-lg {{ $books->currentPage() == $page ? 'pagination-active' : 'text-[#3A2E2A]' }}">
+                                       class="pagination-link w-10 h-10 flex items-center justify-center rounded-lg {{ $books->currentPage() == $page ? 'pagination-active text-white' : 'text-[#3A2E2A] hover:text-[#D24C49]' }}">
                                         {{ $page }}
                                     </a>
-                                @endforeach
+                                @endfor
+                                
+                                @if($end < $last)
+                                    @if($end < $last - 1)
+                                        <span class="text-[#3A2E2A]/50">...</span>
+                                    @endif
+                                    <a href="{{ $books->url($last) }}" 
+                                       class="pagination-link w-10 h-10 flex items-center justify-center rounded-lg text-[#3A2E2A] hover:text-[#D24C49]">
+                                        {{ $last }}
+                                    </a>
+                                @endif
                                 
                                 @if($books->hasMorePages())
                                     <a href="{{ $books->nextPageUrl() }}" 
-                                       class="pagination-link px-3 py-2 rounded-lg text-[#3A2E2A] hover:text-[#D24C49] transition">
-                                        Selanjutnya <i class="fas fa-chevron-right ml-1"></i>
+                                       class="pagination-link px-4 py-2 rounded-lg text-[#3A2E2A] hover:text-[#D24C49] transition flex items-center">
+                                        Selanjutnya <i class="fas fa-chevron-right ml-2"></i>
                                     </a>
                                 @else
-                                    <span class="pagination-link px-3 py-2 rounded-lg text-[#3A2E2A]/50 cursor-not-allowed">
-                                        Selanjutnya <i class="fas fa-chevron-right ml-1"></i>
+                                    <span class="pagination-link px-4 py-2 rounded-lg text-[#3A2E2A]/50 cursor-not-allowed flex items-center">
+                                        Selanjutnya <i class="fas fa-chevron-right ml-2"></i>
                                     </span>
                                 @endif
                             </div>
@@ -449,7 +512,7 @@
                     <span class="text-sm">N-CLiterASi © 2025</span>
                 </div>
                 <div class="text-[#EEC8A3] text-sm mt-2 md:mt-0">
-                    Semua hak dilindungi undang-undang
+                    Total: {{ $books->total() }} buku • Pegawai Panel
                 </div>
             </div>
         </div>
@@ -473,7 +536,8 @@
                     const title = row.querySelector('h4').textContent.toLowerCase();
                     const author = row.querySelector('td:nth-child(2) span').textContent.toLowerCase();
                     const isbn = row.querySelector('code').textContent.toLowerCase();
-                    const stock = parseInt(row.querySelector('.px-3.py-1.5').textContent);
+                    const stockText = row.querySelector('.px-3.py-1\\.5').textContent;
+                    const stock = parseInt(stockText);
                     
                     let matchesSearch = title.includes(searchTerm) || 
                                        author.includes(searchTerm) || 
@@ -511,17 +575,24 @@
                     this.style.transform = 'translateY(0)';
                 });
             });
-            
-            // Confirm delete
-            const deleteButtons = document.querySelectorAll('form button[type="submit"]');
-            deleteButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    if (!confirm('Apakah Anda yakin ingin menghapus buku ini?')) {
-                        e.preventDefault();
-                    }
-                });
-            });
         });
+
+        // Confirm delete function
+        function confirmDelete(bookTitle) {
+            return confirm(`Apakah Anda yakin ingin menghapus buku:\n\n"${bookTitle}"?\n\nAksi ini tidak dapat dibatalkan dan semua data terkait buku ini akan dihapus.`);
+        }
+
+        // Success message auto hide
+        @if(session('success') || session('error'))
+            setTimeout(function() {
+                const messages = document.querySelectorAll('.bg-gradient-to-r');
+                messages.forEach(msg => {
+                    msg.style.transition = 'opacity 0.5s ease';
+                    msg.style.opacity = '0';
+                    setTimeout(() => msg.remove(), 500);
+                });
+            }, 5000);
+        @endif
     </script>
 </body>
 </html>
