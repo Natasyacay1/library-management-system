@@ -3,432 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Library Management System</title>
+    <title>Katalog Buku - N-CLiterASi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        .sidebar {
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .book-card {
             transition: all 0.3s ease;
         }
-        .sidebar.collapsed {
-            width: 70px;
-        }
-        .sidebar.collapsed .sidebar-text {
-            display: none;
-        }
-        .main-content {
-            transition: all 0.3s ease;
-        }
-        .stat-card:hover {
+        .book-card:hover {
             transform: translateY(-5px);
-            transition: transform 0.3s ease;
-        }
-        .chart-container {
-            position: relative;
-            height: 300px;
-            width: 100%;
-        }
-        .alert-item {
-            animation: fadeIn 0.5s ease;
-        }
-        .nav-item.active {
-            background-color: #1e40af;
-        }
-        .nav-item:hover {
-            background-color: #1e40af;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            box-shadow: 0 10px 25px -5px rgba(210, 76, 73, 0.3);
         }
     </style>
 </head>
-<body class="bg-gray-50 font-sans flex">
-    <!-- Sidebar -->
-    <div class="sidebar bg-blue-800 text-white w-64 min-h-screen p-4 flex flex-col">
-        <div class="flex items-center justify-between mb-8">
-            <div class="flex items-center">
-                <i class="fas fa-book text-2xl mr-3"></i>
-                <h1 class="text-xl font-bold sidebar-text">Library System</h1>
-            </div>
-            <button id="toggleSidebar" class="text-white">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
-        
-        <nav class="flex-1">
-            <ul class="space-y-2">
-                <li>
-                    <a href="{{ route('admin.dashboard') }}" class="nav-item flex items-center p-3 bg-blue-700 rounded-lg active">
-                        <i class="fas fa-tachometer-alt mr-3"></i>
-                        <span class="sidebar-text">Dashboard</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.books.index') }}" class="nav-item flex items-center p-3 hover:bg-blue-700 rounded-lg">
-                        <i class="fas fa-book mr-3"></i>
-                        <span class="sidebar-text">Manajemen Buku</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.users.index') }}" class="nav-item flex items-center p-3 hover:bg-blue-700 rounded-lg">
-                        <i class="fas fa-users mr-3"></i>
-                        <span class="sidebar-text">Manajemen User</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.loans.index') }}" class="nav-item flex items-center p-3 hover:bg-blue-700 rounded-lg">
-                        <i class="fas fa-exchange-alt mr-3"></i>
-                        <span class="sidebar-text">Peminjaman</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.fines.index') }}" class="nav-item flex items-center p-3 hover:bg-blue-700 rounded-lg">
-                        <i class="fas fa-money-bill-wave mr-3"></i>
-                        <span class="sidebar-text">Denda</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.settings') }}" class="nav-item flex items-center p-3 hover:bg-blue-700 rounded-lg">
-                        <i class="fas fa-cog mr-3"></i>
-                        <span class="sidebar-text">Pengaturan</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-        
-        <div class="mt-auto pt-4 border-t border-blue-700">
-            <div class="flex items-center p-2">
-                <img src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff" 
-                     alt="Admin" class="w-8 h-8 rounded-full">
-                <div class="ml-3 sidebar-text">
-                    <p class="font-medium">Administrator</p>
-                    <p class="text-sm text-blue-200">admin@library.com</p>
+<body class="bg-[#FAF4EF] text-gray-800">
+
+    <header class="bg-white/110 backdrop-blur-md shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="{{ route('home') }}" class="flex items-center space-x-3">
+                <div class="bg-[#D24C49] text-white p-2 rounded-xl shadow-md">
+                    <i class="fas fa-book-open text-2xl"></i>
                 </div>
-            </div>
-            <form method="POST" action="{{ route('logout') }}" class="mt-2">
-                @csrf
-                <button type="submit" class="nav-item flex items-center w-full p-3 hover:bg-blue-700 rounded-lg text-red-200 hover:text-white">
-                    <i class="fas fa-sign-out-alt mr-3"></i>
-                    <span class="sidebar-text">Logout</span>
-                </button>
-            </form>
+                <h1 class="text-2xl font-bold text-gray-800">N-C<span class="text-[#D24C49]">LiterASi</span></h1>
+            </a>
+
+            <nav class="flex items-center space-x-6 text-lg">
+                <a href="{{ route('books.catalog') }}" class="hover:text-[#D24C49] transition font-medium">Katalog Buku</a>
+
+                @auth
+                    <a href="{{ route('dashboard') }}" class="hover:text-[#D24C49] transition font-medium">Dashboard</a>
+                    <form action="{{ route('logout') }}" method="POST" class="m-0">
+                        @csrf
+                        <button type="submit" class="text-[#D24C49] hover:text-red-700 font-semibold">
+                            <i class="fas fa-sign-out-alt mr-1"></i>Logout
+                        </button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}" class="hover:text-[#D24C49] transition font-medium">Log in</a>
+                    <a href="{{ route('register') }}" class="bg-[#D24C49] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition font-medium shadow-md">Daftar</a>
+                @endauth
+            </nav>
         </div>
-    </div>
+    </header>
 
     <!-- Main Content -->
-    <div class="main-content flex-1 p-6">
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-8">
-            <div>
-                <h2 class="text-2xl font-bold text-gray-800">Dashboard Admin</h2>
-                <p class="text-gray-600">Selamat datang di sistem manajemen perpustakaan</p>
-            </div>
-            <div class="flex items-center space-x-4">
-                <div class="relative">
-                    <input type="text" placeholder="Cari..." class="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                </div>
-                <button class="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 relative">
-                    <i class="fas fa-bell"></i>
-                    <span class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">3</span>
-                </button>
-            </div>
-        </div>
+    <section class="py-12">
+        <div class="max-w-7xl mx-auto px-6">
+            <h1 class="text-4xl font-bold text-[#D24C49] mb-2">Katalog Buku</h1>
+            <p class="text-gray-600 mb-8">Temukan berbagai koleksi buku digital yang tersedia</p>
 
-        <!-- Statistik Utama -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="stat-card bg-white p-6 rounded-xl shadow-md border-l-4 border-blue-500">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <p class="text-gray-500">Total Pengguna</p>
-                        <h3 class="text-2xl font-bold">1,248</h3>
+            <!-- Search and Filter -->
+            <div class="bg-white rounded-xl p-6 mb-8 shadow-md">
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <div class="relative">
+                            <input type="text" placeholder="Cari judul, penulis, atau kategori..." 
+                                   class="w-full p-3 pl-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D24C49]">
+                            <i class="fas fa-search absolute left-4 top-3.5 text-gray-400"></i>
+                        </div>
                     </div>
-                    <div class="bg-blue-100 p-3 rounded-full">
-                        <i class="fas fa-users text-blue-500 text-xl"></i>
-                    </div>
-                </div>
-                <p class="text-green-500 text-sm mt-2"><i class="fas fa-arrow-up"></i> 12% dari bulan lalu</p>
-            </div>
-            
-            <div class="stat-card bg-white p-6 rounded-xl shadow-md border-l-4 border-green-500">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <p class="text-gray-500">Total Buku</p>
-                        <h3 class="text-2xl font-bold">5,367</h3>
-                    </div>
-                    <div class="bg-green-100 p-3 rounded-full">
-                        <i class="fas fa-book text-green-500 text-xl"></i>
-                    </div>
-                </div>
-                <p class="text-green-500 text-sm mt-2"><i class="fas fa-arrow-up"></i> 8% dari bulan lalu</p>
-            </div>
-            
-            <div class="stat-card bg-white p-6 rounded-xl shadow-md border-l-4 border-purple-500">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <p class="text-gray-500">Peminjaman Aktif</p>
-                        <h3 class="text-2xl font-bold">324</h3>
-                    </div>
-                    <div class="bg-purple-100 p-3 rounded-full">
-                        <i class="fas fa-exchange-alt text-purple-500 text-xl"></i>
-                    </div>
-                </div>
-                <p class="text-red-500 text-sm mt-2"><i class="fas fa-arrow-down"></i> 5% dari bulan lalu</p>
-            </div>
-            
-            <div class="stat-card bg-white p-6 rounded-xl shadow-md border-l-4 border-yellow-500">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <p class="text-gray-500">Total Denda</p>
-                        <h3 class="text-2xl font-bold">Rp 1.250.000</h3>
-                    </div>
-                    <div class="bg-yellow-100 p-3 rounded-full">
-                        <i class="fas fa-money-bill-wave text-yellow-500 text-xl"></i>
-                    </div>
-                </div>
-                <p class="text-red-500 text-sm mt-2"><i class="fas fa-arrow-up"></i> 15% dari bulan lalu</p>
-            </div>
-        </div>
-
-        <!-- Charts dan Alert Section -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <!-- Chart Peminjaman Bulanan -->
-            <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-md">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">Peminjaman Bulanan</h3>
-                    <select class="border border-gray-300 rounded-lg px-3 py-1 text-sm">
-                        <option>Tahun 2023</option>
-                        <option>Tahun 2022</option>
+                    <select class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D24C49]">
+                        <option>Semua Kategori</option>
+                        <option>Fiksi</option>
+                        <option>Non-Fiksi</option>
+                        <option>Sains</option>
+                        <option>Teknologi</option>
                     </select>
-                </div>
-                <div class="chart-container">
-                    <canvas id="loansChart"></canvas>
+                    <button class="bg-[#D24C49] text-white px-6 py-3 rounded-lg hover:bg-red-700 transition font-medium">
+                        <i class="fas fa-filter mr-2"></i> Filter
+                    </button>
                 </div>
             </div>
-            
-            <!-- System Alerts -->
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <h3 class="font-bold text-lg mb-4">System Alerts</h3>
-                <div class="space-y-4">
-                    <div class="alert-item p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded-lg">
-                        <div class="flex items-start">
-                            <i class="fas fa-exclamation-triangle text-yellow-500 mt-1 mr-3"></i>
-                            <div>
-                                <h4 class="font-medium">Buku Terlambat</h4>
-                                <p class="text-sm text-gray-600">24 buku belum dikembalikan setelah jatuh tempo</p>
-                                <a href="{{ route('admin.loans.index') }}" class="text-blue-600 text-sm hover:underline mt-1 inline-block">Lihat detail</a>
-                            </div>
+
+            <!-- Books Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                @foreach($books as $book)
+                <div class="book-card bg-white rounded-xl overflow-hidden shadow-md border border-[#EEC8A3]">
+                    <div class="p-5">
+                        <div class="bg-[#EEC8A3] h-40 rounded-lg mb-4 flex items-center justify-center">
+                            <i class="fas fa-book text-5xl text-[#D24C49]"></i>
                         </div>
-                    </div>
-                    
-                    <div class="alert-item p-4 bg-blue-50 border-l-4 border-blue-500 rounded-lg">
-                        <div class="flex items-start">
-                            <i class="fas fa-box-open text-blue-500 mt-1 mr-3"></i>
-                            <div>
-                                <h4 class="font-medium">Stok Habis</h4>
-                                <p class="text-sm text-gray-600">18 buku sudah habis stoknya</p>
-                                <a href="{{ route('admin.books.index') }}" class="text-blue-600 text-sm hover:underline mt-1 inline-block">Kelola stok</a>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="alert-item p-4 bg-purple-50 border-l-4 border-purple-500 rounded-lg">
-                        <div class="flex items-start">
-                            <i class="fas fa-book-open text-purple-500 mt-1 mr-3"></i>
-                            <div>
-                                <h4 class="font-medium">Peminjaman Aktif</h4>
-                                <p class="text-sm text-gray-600">324 buku sedang dipinjam</p>
-                                <a href="{{ route('admin.loans.index') }}" class="text-blue-600 text-sm hover:underline mt-1 inline-block">Lihat semua</a>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="alert-item p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
-                        <div class="flex items-start">
-                            <i class="fas fa-clock text-red-500 mt-1 mr-3"></i>
-                            <div>
-                                <h4 class="font-medium">Jatuh Tempo Segera</h4>
-                                <p class="text-sm text-gray-600">15 buku akan jatuh tempo dalam 2 hari</p>
-                                <a href="{{ route('admin.loans.index') }}" class="text-blue-600 text-sm hover:underline mt-1 inline-block">Notifikasi</a>
-                            </div>
+                        <h3 class="font-bold text-lg text-gray-800 mb-1 truncate">{{ $book->title ?? 'Judul Buku' }}</h3>
+                        <p class="text-gray-600 text-sm mb-2">{{ $book->author ?? 'Penulis' }}</p>
+                        <div class="flex items-center justify-between mt-4">
+                            <span class="bg-[#EEC8A3] text-gray-800 text-xs font-medium px-3 py-1 rounded-full">
+                                {{ $book->category ?? 'Kategori' }}
+                            </span>
+                            @auth
+                            <button class="bg-[#D24C49] text-white text-sm px-4 py-2 rounded-lg hover:bg-red-700 transition">
+                                <i class="fas fa-bookmark mr-1"></i> Pinjam
+                            </button>
+                            @else
+                            <a href="{{ route('login') }}" class="bg-gray-200 text-gray-800 text-sm px-4 py-2 rounded-lg hover:bg-gray-300 transition">
+                                Login untuk Pinjam
+                            </a>
+                            @endauth
                         </div>
                     </div>
                 </div>
+                @endforeach
+            </div>
+
+            <!-- Pagination -->
+            @if($books->hasPages())
+            <div class="mt-10 flex justify-center">
+                <div class="flex space-x-2">
+                    @if($books->onFirstPage())
+                    <span class="px-4 py-2 bg-gray-200 text-gray-500 rounded-lg cursor-not-allowed">
+                        <i class="fas fa-chevron-left mr-1"></i> Sebelumnya
+                    </span>
+                    @else
+                    <a href="{{ $books->previousPageUrl() }}" class="px-4 py-2 bg-white text-[#D24C49] border border-[#D24C49] rounded-lg hover:bg-[#D24C49] hover:text-white transition">
+                        <i class="fas fa-chevron-left mr-1"></i> Sebelumnya
+                    </a>
+                    @endif
+
+                    @if($books->hasMorePages())
+                    <a href="{{ $books->nextPageUrl() }}" class="px-4 py-2 bg-white text-[#D24C49] border border-[#D24C49] rounded-lg hover:bg-[#D24C49] hover:text-white transition">
+                        Selanjutnya <i class="fas fa-chevron-right ml-1"></i>
+                    </a>
+                    @else
+                    <span class="px-4 py-2 bg-gray-200 text-gray-500 rounded-lg cursor-not-allowed">
+                        Selanjutnya <i class="fas fa-chevron-right ml-1"></i>
+                    </span>
+                    @endif
+                </div>
+            </div>
+            @endif
+        </div>
+    </section>
+
+    <!-- Footer (SAMA PERSIS dengan homepage) -->
+    <footer class="bg-[#3A2E2A] text-white py-14">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div>
+                <h3 class="text-xl font-bold mb-4 flex items-center"><i class="fas fa-book-open text-[#EEC8A3] mr-2"></i>N-CLiterASi</h3>
+                <p class="text-gray-300">Akses pengetahuan kapan saja, website dengan tampilan lebih segar dan nyaman digunakan.</p>
+            </div>
+
+            <div>
+                <h4 class="font-bold text-lg mb-3">Tautan Cepat</h4>
+                <ul class="space-y-2 text-gray-300">
+                    <li><a class="hover:text-white" href="{{ route('books.catalog') }}">Katalog Buku</a></li>
+                    <li><a class="hover:text-white" href="{{ route('home') }}">Beranda</a></li>
+                    @auth
+                    <li><a class="hover:text-white" href="{{ route('dashboard') }}">Dashboard</a></li>
+                    @else
+                    <li><a class="hover:text-white" href="{{ route('login') }}">Login</a></li>
+                    <li><a class="hover:text-white" href="{{ route('register') }}">Daftar</a></li>
+                    @endauth
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="font-bold text-lg mb-3">Kontak</h4>
+                <p class="flex items-center text-gray-300"><i class="fas fa-envelope mr-2"></i> ncLiterERAi@perpusdigital.ac.id</p>
+                <p class="flex items-center text-gray-300"><i class="fas fa-phone mr-2"></i> (021) 1234-5678</p>
+                <p class="flex items-center text-gray-300"><i class="fas fa-map-marker-alt mr-2"></i>Makassar, Indonesia</p>
             </div>
         </div>
-
-        <!-- Quick Actions -->
-        <div class="bg-white p-6 rounded-xl shadow-md mb-8">
-            <h3 class="font-bold text-lg mb-4">Quick Actions</h3>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <a href="{{ route('admin.books.create') }}" class="bg-blue-600 text-white p-4 rounded-lg text-center hover:bg-blue-700 transition">
-                    <i class="fas fa-plus text-2xl mb-2"></i>
-                    <p class="font-medium">Tambah Buku</p>
-                </a>
-                <a href="{{ route('admin.users.create') }}" class="bg-green-600 text-white p-4 rounded-lg text-center hover:bg-green-700 transition">
-                    <i class="fas fa-user-plus text-2xl mb-2"></i>
-                    <p class="font-medium">Tambah User</p>
-                </a>
-                <a href="{{ route('admin.loans.index') }}" class="bg-purple-600 text-white p-4 rounded-lg text-center hover:bg-purple-700 transition">
-                    <i class="fas fa-exchange-alt text-2xl mb-2"></i>
-                    <p class="font-medium">Kelola Peminjaman</p>
-                </a>
-                <a href="{{ route('admin.fines.index') }}" class="bg-yellow-600 text-white p-4 rounded-lg text-center hover:bg-yellow-700 transition">
-                    <i class="fas fa-money-bill-wave text-2xl mb-2"></i>
-                    <p class="font-medium">Kelola Denda</p>
-                </a>
-            </div>
+        <div class="text-center text-gray-400 mt-10 border-t border-gray-700 pt-6">
+            <p>&copy; 2025 PerpustakaanDigital. All rights reserved.</p>
         </div>
+    </footer>
 
-        <!-- Recent Activities -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <!-- Recent Users -->
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <h3 class="font-bold text-lg mb-4">Pengguna Terbaru</h3>
-                <div class="space-y-3">
-                    <div class="flex items-center p-3 bg-gray-50 rounded-lg">
-                        <img src="https://ui-avatars.com/api/?name=Ahmad+Rizki&background=0D8ABC&color=fff" 
-                             alt="User" class="w-10 h-10 rounded-full">
-                        <div class="ml-3">
-                            <p class="font-medium">Ahmad Rizki</p>
-                            <p class="text-sm text-gray-500">Bergabung 2 jam lalu</p>
-                        </div>
-                        <span class="ml-auto bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Mahasiswa</span>
-                    </div>
-                    <div class="flex items-center p-3 bg-gray-50 rounded-lg">
-                        <img src="https://ui-avatars.com/api/?name=Siti+Nurhaliza&background=10B981&color=fff" 
-                             alt="User" class="w-10 h-10 rounded-full">
-                        <div class="ml-3">
-                            <p class="font-medium">Siti Nurhaliza</p>
-                            <p class="text-sm text-gray-500">Bergabung 1 hari lalu</p>
-                        </div>
-                        <span class="ml-auto bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Pegawai</span>
-                    </div>
-                    <div class="flex items-center p-3 bg-gray-50 rounded-lg">
-                        <img src="https://ui-avatars.com/api/?name=Budi+Santoso&background=F59E0B&color=fff" 
-                             alt="User" class="w-10 h-10 rounded-full">
-                        <div class="ml-3">
-                            <p class="font-medium">Budi Santoso</p>
-                            <p class="text-sm text-gray-500">Bergabung 2 hari lalu</p>
-                        </div>
-                        <span class="ml-auto bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Mahasiswa</span>
-                    </div>
-                </div>
-                <a href="{{ route('admin.users.index') }}" class="block text-center text-blue-600 hover:text-blue-800 mt-4 font-medium">
-                    Lihat Semua Pengguna
-                </a>
-            </div>
-
-            <!-- Recent Loans -->
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <h3 class="font-bold text-lg mb-4">Peminjaman Terbaru</h3>
-                <div class="space-y-3">
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div>
-                            <p class="font-medium">Machine Learning Fundamentals</p>
-                            <p class="text-sm text-gray-500">Ahmad Rizki • 15 Nov 2023</p>
-                        </div>
-                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Aktif</span>
-                    </div>
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div>
-                            <p class="font-medium">Data Science Handbook</p>
-                            <p class="text-sm text-gray-500">Siti Nurhaliza • 14 Nov 2023</p>
-                        </div>
-                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Aktif</span>
-                    </div>
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div>
-                            <p class="font-medium">Web Development Guide</p>
-                            <p class="text-sm text-gray-500">Budi Santoso • 10 Nov 2023</p>
-                        </div>
-                        <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Akan Jatuh Tempo</span>
-                    </div>
-                </div>
-                <a href="{{ route('admin.loans.index') }}" class="block text-center text-blue-600 hover:text-blue-800 mt-4 font-medium">
-                    Lihat Semua Peminjaman
-                </a>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <footer class="text-center text-gray-500 text-sm py-4">
-            <p>© 2025 Library Management System. All rights reserved.</p>
-        </footer>
-    </div>
-
-    <script>
-        // Toggle Sidebar
-        document.getElementById('toggleSidebar').addEventListener('click', function() {
-            const sidebar = document.querySelector('.sidebar');
-            sidebar.classList.toggle('collapsed');
-        });
-
-        // Chart Data
-        const monthlyLoansData = {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
-            data: [65, 59, 80, 81, 56, 55, 70, 65, 60, 75, 80, 90]
-        };
-
-        // Initialize Charts
-        document.addEventListener('DOMContentLoaded', function() {
-            // Monthly Loans Chart
-            const loansCtx = document.getElementById('loansChart').getContext('2d');
-            const loansChart = new Chart(loansCtx, {
-                type: 'line',
-                data: {
-                    labels: monthlyLoansData.labels,
-                    datasets: [{
-                        label: 'Peminjaman Bulanan',
-                        data: monthlyLoansData.data,
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        borderColor: '#3b82f6',
-                        borderWidth: 2,
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                drawBorder: false
-                            },
-                            ticks: {
-                                callback: function(value) {
-                                    return value;
-                                }
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            }
-                        }
-                    }
-                }
-            });
-        });
-
-        // Add active class to clicked nav item
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', function() {
-                document.querySelectorAll('.nav-item').forEach(nav => {
-                    nav.classList.remove('active');
-                });
-                this.classList.add('active');
-            });
-        });
-    </script>
 </body>
 </html>

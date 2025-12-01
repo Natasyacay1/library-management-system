@@ -3,12 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Library Management System</title>
+    <title>Admin Dashboard - N-CLiterASi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #D24C49 0%, #A52C2A 100%);
+        }
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 30px -6px rgba(0,0,0,0.2);
+        }
+        .soft-bg {
+            background-color: #EEC8A3;
+        }
         .sidebar {
+            background: linear-gradient(180deg, #3A2E2A 0%, #2B211E 100%);
             transition: all 0.3s ease;
         }
         .sidebar.collapsed {
@@ -33,10 +50,10 @@
             animation: fadeIn 0.5s ease;
         }
         .nav-item.active {
-            background-color: #1e40af;
+            background-color: #D24C49 !important;
         }
         .nav-item:hover {
-            background-color: #1e40af;
+            background-color: #A52C2A;
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -44,15 +61,18 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 font-sans flex">
+<body class="bg-[#FAF4EF] flex">
+
     <!-- Sidebar -->
-    <div class="sidebar bg-blue-800 text-white w-64 min-h-screen p-4 flex flex-col">
+    <div class="sidebar w-64 min-h-screen p-4 flex flex-col text-white">
         <div class="flex items-center justify-between mb-8">
             <div class="flex items-center">
-                <i class="fas fa-book text-2xl mr-3"></i>
-                <h1 class="text-xl font-bold sidebar-text">Library System</h1>
+                <div class="bg-[#D24C49] text-white p-2 rounded-xl shadow-md mr-3">
+                    <i class="fas fa-book-open text-xl"></i>
+                </div>
+                <h1 class="text-xl font-bold sidebar-text">N-C<span class="text-[#EEC8A3]">LiterASi</span></h1>
             </div>
-            <button id="toggleSidebar" class="text-white">
+            <button id="toggleSidebar" class="text-white hover:text-[#EEC8A3]">
                 <i class="fas fa-bars"></i>
             </button>
         </div>
@@ -60,52 +80,59 @@
         <nav class="flex-1">
             <ul class="space-y-2">
                 <li>
-                    <a href="{{ route('admin.dashboard') }}" class="nav-item flex items-center p-3 bg-blue-700 rounded-lg active">
+                    <a href="{{ route('dashboard') }}" class="nav-item flex items-center p-3 rounded-lg bg-[#D24C49]">
                         <i class="fas fa-tachometer-alt mr-3"></i>
-                        <span class="sidebar-text">Dashboard</span>
+                        <span class="sidebar-text font-medium">Dashboard</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('admin.books.index') }}" class="nav-item flex items-center p-3 hover:bg-blue-700 rounded-lg">
+                    <a href="{{ route('admin.books.index') }}" class="nav-item flex items-center p-3 hover:bg-[#A52C2A] rounded-lg">
                         <i class="fas fa-book mr-3"></i>
-                        <span class="sidebar-text">Manajemen Buku</span>
+                        <span class="sidebar-text font-medium">Manajemen Buku</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('admin.users.index') }}" class="nav-item flex items-center p-3 hover:bg-blue-700 rounded-lg">
+                    <a href="{{ route('admin.users.index') }}" class="nav-item flex items-center p-3 hover:bg-[#A52C2A] rounded-lg">
                         <i class="fas fa-users mr-3"></i>
-                        <span class="sidebar-text">Manajemen User</span>
+                        <span class="sidebar-text font-medium">Manajemen User</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('admin.loans.index') }}" class="nav-item flex items-center p-3 hover:bg-blue-700 rounded-lg">
+                    <a href="{{ route('admin.loans.index') }}" class="nav-item flex items-center p-3 hover:bg-[#A52C2A] rounded-lg">
                         <i class="fas fa-exchange-alt mr-3"></i>
-                        <span class="sidebar-text">Peminjaman</span>
+                        <span class="sidebar-text font-medium">Peminjaman</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('admin.fines.index') }}" class="nav-item flex items-center p-3 hover:bg-blue-700 rounded-lg">
+                    <a href="{{ route('admin.fines.index') }}" class="nav-item flex items-center p-3 hover:bg-[#A52C2A] rounded-lg">
                         <i class="fas fa-money-bill-wave mr-3"></i>
-                        <span class="sidebar-text">Denda</span>
+                        <span class="sidebar-text font-medium">Denda</span>
+                    </a>
+                </li>
+                <li class="mt-8 pt-4 border-t border-[#4A3D38]">
+                    <a href="{{ route('books.catalog') }}" class="nav-item flex items-center p-3 hover:bg-[#A52C2A] rounded-lg">
+                        <i class="fas fa-search mr-3"></i>
+                        <span class="sidebar-text font-medium">Katalog Buku (Public)</span>
                     </a>
                 </li>
             </ul>
         </nav>
-        
-        <div class="mt-auto pt-4 border-t border-blue-700">
+
+        <div class="mt-auto pt-4 border-t border-[#4A3D38]">
             <div class="flex items-center p-2">
-                <img src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff" 
-                    alt="Admin" class="w-8 h-8 rounded-full">
+                <div class="bg-[#EEC8A3] text-[#3A2E2A] p-2 rounded-full">
+                    <i class="fas fa-user text-lg"></i>
+                </div>
                 <div class="ml-3 sidebar-text">
                     <p class="font-medium">Administrator</p>
-                    <p class="text-sm text-blue-200">admin@library.com</p>
+                    <p class="text-sm text-[#EEC8A3]">admin@ncliterasi.com</p>
                 </div>
             </div>
             <form method="POST" action="{{ route('logout') }}" class="mt-2">
                 @csrf
-                <button type="submit" class="nav-item flex items-center w-full p-3 hover:bg-blue-700 rounded-lg text-red-200 hover:text-white">
+                <button type="submit" class="nav-item flex items-center w-full p-3 hover:bg-[#A52C2A] rounded-lg text-white">
                     <i class="fas fa-sign-out-alt mr-3"></i>
-                    <span class="sidebar-text">Logout</span>
+                    <span class="sidebar-text font-medium">Logout</span>
                 </button>
             </form>
         </div>
@@ -114,89 +141,90 @@
     <!-- Main Content -->
     <div class="main-content flex-1 p-6">
         <!-- Header -->
-        <div class="flex justify-between items-center mb-8">
-            <div>
-                <h2 class="text-2xl font-bold text-gray-800">Dashboard Admin</h2>
-                <p class="text-gray-600">Selamat datang di sistem manajemen perpustakaan</p>
-            </div>
-            <div class="flex items-center space-x-4">
-                <div class="relative">
-                    <input type="text" placeholder="Cari..." class="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+        <header class="bg-white/110 backdrop-blur-md shadow-md rounded-xl p-4 mb-8">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Dashboard Admin</h2>
+                    <p class="text-gray-600">Selamat datang di sistem manajemen perpustakaan digital</p>
                 </div>
-                <button class="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 relative">
-                    <i class="fas fa-bell"></i>
-                    <span class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">3</span>
-                </button>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Cari..." class="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#D24C49]">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <button class="bg-[#D24C49] text-white p-3 rounded-lg relative hover:bg-red-700 transition shadow-md">
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute -top-1 -right-1 bg-white text-[#D24C49] rounded-full w-5 h-5 text-xs flex items-center justify-center font-bold">3</span>
+                    </button>
+                </div>
             </div>
-        </div>
+        </header>
 
         <!-- Statistik Utama -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="stat-card bg-white p-6 rounded-xl shadow-md border-l-4 border-blue-500">
+            <div class="stat-card bg-white p-6 rounded-xl shadow-lg border border-[#EEC8A3]">
                 <div class="flex justify-between items-center">
                     <div>
                         <p class="text-gray-500">Total Pengguna</p>
-                        <h3 class="text-2xl font-bold">1,248</h3>
+                        <h3 class="text-3xl font-bold text-[#D24C49]">1,248</h3>
                     </div>
-                    <div class="bg-blue-100 p-3 rounded-full">
-                        <i class="fas fa-users text-blue-500 text-xl"></i>
+                    <div class="bg-[#EEC8A3] p-3 rounded-full">
+                        <i class="fas fa-users text-[#D24C49] text-2xl"></i>
                     </div>
                 </div>
-                <p class="text-green-500 text-sm mt-2"><i class="fas fa-arrow-up"></i> 12% dari bulan lalu</p>
+                <p class="text-green-600 text-sm mt-2 font-medium"><i class="fas fa-arrow-up"></i> 12% dari bulan lalu</p>
             </div>
-            
-            <div class="stat-card bg-white p-6 rounded-xl shadow-md border-l-4 border-green-500">
+
+            <div class="stat-card bg-white p-6 rounded-xl shadow-lg border border-[#EEC8A3]">
                 <div class="flex justify-between items-center">
                     <div>
                         <p class="text-gray-500">Total Buku</p>
-                        <h3 class="text-2xl font-bold">5,367</h3>
+                        <h3 class="text-3xl font-bold text-[#D24C49]">5,367</h3>
                     </div>
-                    <div class="bg-green-100 p-3 rounded-full">
-                        <i class="fas fa-book text-green-500 text-xl"></i>
+                    <div class="bg-[#EEC8A3] p-3 rounded-full">
+                        <i class="fas fa-book text-[#D24C49] text-2xl"></i>
                     </div>
                 </div>
-                <p class="text-green-500 text-sm mt-2"><i class="fas fa-arrow-up"></i> 8% dari bulan lalu</p>
+                <p class="text-green-600 text-sm mt-2 font-medium"><i class="fas fa-arrow-up"></i> 8% dari bulan lalu</p>
             </div>
-            
-            <div class="stat-card bg-white p-6 rounded-xl shadow-md border-l-4 border-purple-500">
+
+            <div class="stat-card bg-white p-6 rounded-xl shadow-lg border border-[#EEC8A3]">
                 <div class="flex justify-between items-center">
                     <div>
                         <p class="text-gray-500">Peminjaman Aktif</p>
-                        <h3 class="text-2xl font-bold">324</h3>
+                        <h3 class="text-3xl font-bold text-[#D24C49]">324</h3>
                     </div>
-                    <div class="bg-purple-100 p-3 rounded-full">
-                        <i class="fas fa-exchange-alt text-purple-500 text-xl"></i>
+                    <div class="bg-[#EEC8A3] p-3 rounded-full">
+                        <i class="fas fa-exchange-alt text-[#D24C49] text-2xl"></i>
                     </div>
                 </div>
-                <p class="text-red-500 text-sm mt-2"><i class="fas fa-arrow-down"></i> 5% dari bulan lalu</p>
+                <p class="text-red-600 text-sm mt-2 font-medium"><i class="fas fa-arrow-down"></i> 5% dari bulan lalu</p>
             </div>
-            
-            <div class="stat-card bg-white p-6 rounded-xl shadow-md border-l-4 border-yellow-500">
+
+            <div class="stat-card bg-white p-6 rounded-xl shadow-lg border border-[#EEC8A3]">
                 <div class="flex justify-between items-center">
                     <div>
                         <p class="text-gray-500">Total Denda</p>
-                        <h3 class="text-2xl font-bold">Rp 1.250.000</h3>
+                        <h3 class="text-3xl font-bold text-[#D24C49]">Rp 1.250.000</h3>
                     </div>
-                    <div class="bg-yellow-100 p-3 rounded-full">
-                        <i class="fas fa-money-bill-wave text-yellow-500 text-xl"></i>
+                    <div class="bg-[#EEC8A3] p-3 rounded-full">
+                        <i class="fas fa-money-bill-wave text-[#D24C49] text-2xl"></i>
                     </div>
                 </div>
-                <p class="text-red-500 text-sm mt-2"><i class="fas fa-arrow-up"></i> 15% dari bulan lalu</p>
+                <p class="text-red-600 text-sm mt-2 font-medium"><i class="fas fa-arrow-up"></i> 15% dari bulan lalu</p>
             </div>
         </div>
 
         <!-- Charts dan Alert Section -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             <!-- Chart Peminjaman Bulanan -->
-            <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-md">
+            <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg border border-[#EEC8A3]">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">Peminjaman Bulanan</h3>
-                    <select class="border border-gray-300 rounded-lg px-3 py-1 text-sm">
+                    <h3 class="font-bold text-lg text-gray-800">Peminjaman Bulanan</h3>
+                    <select class="border border-gray-300 rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#D24C49]">
                         <option>Tahun 2025</option>
                         <option>Tahun 2024</option>
                         <option>Tahun 2023</option>
-                        <option>Tahun 2022</option>
                     </select>
                 </div>
                 <div class="chart-container">
@@ -205,49 +233,49 @@
             </div>
             
             <!-- System Alerts -->
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <h3 class="font-bold text-lg mb-4">System Alerts</h3>
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-[#EEC8A3]">
+                <h3 class="font-bold text-lg text-gray-800 mb-4">System Alerts</h3>
                 <div class="space-y-4">
-                    <div class="alert-item p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded-lg">
+                    <div class="alert-item p-4 bg-[#FFE9D6] border-l-4 border-[#D24C49] rounded-lg">
                         <div class="flex items-start">
-                            <i class="fas fa-exclamation-triangle text-yellow-500 mt-1 mr-3"></i>
+                            <i class="fas fa-exclamation-triangle text-[#D24C49] mt-1 mr-3"></i>
                             <div>
-                                <h4 class="font-medium">Buku Terlambat</h4>
+                                <h4 class="font-medium text-gray-800">Buku Terlambat</h4>
                                 <p class="text-sm text-gray-600">24 buku belum dikembalikan setelah jatuh tempo</p>
-                                <a href="{{ route('admin.loans.index') }}" class="text-blue-600 text-sm hover:underline mt-1 inline-block">Lihat detail</a>
+                                <a href="{{ route('admin.loans.index') }}" class="text-[#D24C49] text-sm hover:underline mt-1 inline-block font-medium">Lihat detail</a>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="alert-item p-4 bg-blue-50 border-l-4 border-blue-500 rounded-lg">
+                    <div class="alert-item p-4 bg-[#FFE9D6] border-l-4 border-[#EEC8A3] rounded-lg">
                         <div class="flex items-start">
-                            <i class="fas fa-box-open text-blue-500 mt-1 mr-3"></i>
+                            <i class="fas fa-box-open text-[#A52C2A] mt-1 mr-3"></i>
                             <div>
-                                <h4 class="font-medium">Stok Habis</h4>
+                                <h4 class="font-medium text-gray-800">Stok Habis</h4>
                                 <p class="text-sm text-gray-600">18 buku sudah habis stoknya</p>
-                                <a href="{{ route('admin.books.index') }}" class="text-blue-600 text-sm hover:underline mt-1 inline-block">Kelola stok</a>
+                                <a href="{{ route('admin.books.index') }}" class="text-[#D24C49] text-sm hover:underline mt-1 inline-block font-medium">Kelola stok</a>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="alert-item p-4 bg-purple-50 border-l-4 border-purple-500 rounded-lg">
+                    <div class="alert-item p-4 bg-[#FFE9D6] border-l-4 border-[#3A2E2A] rounded-lg">
                         <div class="flex items-start">
-                            <i class="fas fa-book-open text-purple-500 mt-1 mr-3"></i>
+                            <i class="fas fa-book-open text-[#3A2E2A] mt-1 mr-3"></i>
                             <div>
-                                <h4 class="font-medium">Peminjaman Aktif</h4>
+                                <h4 class="font-medium text-gray-800">Peminjaman Aktif</h4>
                                 <p class="text-sm text-gray-600">324 buku sedang dipinjam</p>
-                                <a href="{{ route('admin.loans.index') }}" class="text-blue-600 text-sm hover:underline mt-1 inline-block">Lihat semua</a>
+                                <a href="{{ route('admin.loans.index') }}" class="text-[#D24C49] text-sm hover:underline mt-1 inline-block font-medium">Lihat semua</a>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="alert-item p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
+                    <div class="alert-item p-4 bg-[#FFE9D6] border-l-4 border-[#D24C49] rounded-lg">
                         <div class="flex items-start">
-                            <i class="fas fa-clock text-red-500 mt-1 mr-3"></i>
+                            <i class="fas fa-clock text-[#D24C49] mt-1 mr-3"></i>
                             <div>
-                                <h4 class="font-medium">Jatuh Tempo Segera</h4>
+                                <h4 class="font-medium text-gray-800">Jatuh Tempo Segera</h4>
                                 <p class="text-sm text-gray-600">15 buku akan jatuh tempo dalam 2 hari</p>
-                                <a href="{{ route('admin.loans.index') }}" class="text-blue-600 text-sm hover:underline mt-1 inline-block">Notifikasi</a>
+                                <a href="{{ route('admin.loans.index') }}" class="text-[#D24C49] text-sm hover:underline mt-1 inline-block font-medium">Notifikasi</a>
                             </div>
                         </div>
                     </div>
@@ -256,22 +284,22 @@
         </div>
 
         <!-- Quick Actions -->
-        <div class="bg-white p-6 rounded-xl shadow-md mb-8">
-            <h3 class="font-bold text-lg mb-4">Quick Actions</h3>
+        <div class="bg-white p-6 rounded-xl shadow-lg border border-[#EEC8A3] mb-8">
+            <h3 class="font-bold text-lg text-gray-800 mb-4">Quick Actions</h3>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <a href="{{ route('admin.books.create') }}" class="bg-blue-600 text-white p-4 rounded-lg text-center hover:bg-blue-700 transition">
+                <a href="{{ route('admin.books.create') }}" class="bg-gradient-to-r from-[#D24C49] to-[#A52C2A] text-white p-4 rounded-lg text-center hover:opacity-90 transition transform hover:scale-105 shadow-md">
                     <i class="fas fa-plus text-2xl mb-2"></i>
                     <p class="font-medium">Tambah Buku</p>
                 </a>
-                <a href="{{ route('admin.users.create') }}" class="bg-green-600 text-white p-4 rounded-lg text-center hover:bg-green-700 transition">
+                <a href="{{ route('admin.users.create') }}" class="bg-gradient-to-r from-[#3A2E2A] to-[#2B211E] text-white p-4 rounded-lg text-center hover:opacity-90 transition transform hover:scale-105 shadow-md">
                     <i class="fas fa-user-plus text-2xl mb-2"></i>
                     <p class="font-medium">Tambah User</p>
                 </a>
-                <a href="{{ route('admin.loans.index') }}" class="bg-purple-600 text-white p-4 rounded-lg text-center hover:bg-purple-700 transition">
+                <a href="{{ route('admin.loans.index') }}" class="bg-gradient-to-r from-[#D24C49] to-[#EEC8A3] text-[#3A2E2A] p-4 rounded-lg text-center hover:opacity-90 transition transform hover:scale-105 shadow-md">
                     <i class="fas fa-exchange-alt text-2xl mb-2"></i>
                     <p class="font-medium">Kelola Peminjaman</p>
                 </a>
-                <a href="{{ route('admin.fines.index') }}" class="bg-yellow-600 text-white p-4 rounded-lg text-center hover:bg-yellow-700 transition">
+                <a href="{{ route('admin.fines.index') }}" class="bg-gradient-to-r from-[#EEC8A3] to-[#FFE9D6] text-[#3A2E2A] p-4 rounded-lg text-center hover:opacity-90 transition transform hover:scale-105 shadow-md">
                     <i class="fas fa-money-bill-wave text-2xl mb-2"></i>
                     <p class="font-medium">Kelola Denda</p>
                 </a>
@@ -281,77 +309,80 @@
         <!-- Recent Activities -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <!-- Recent Users -->
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <h3 class="font-bold text-lg mb-4">Pengguna Terbaru</h3>
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-[#EEC8A3]">
+                <h3 class="font-bold text-lg text-gray-800 mb-4">Pengguna Terbaru</h3>
                 <div class="space-y-3">
-                    <div class="flex items-center p-3 bg-gray-50 rounded-lg">
-                        <img src="https://ui-avatars.com/api/?name=Ahmad+Rizki&background=0D8ABC&color=fff" 
-                            alt="User" class="w-10 h-10 rounded-full">
+                    <div class="flex items-center p-3 bg-[#FAF4EF] rounded-lg">
+                        <div class="bg-[#EEC8A3] text-[#3A2E2A] p-2 rounded-full">
+                            <i class="fas fa-user"></i>
+                        </div>
                         <div class="ml-3">
                             <p class="font-medium">Ahmad Rizki</p>
                             <p class="text-sm text-gray-500">Bergabung 2 jam lalu</p>
                         </div>
-                        <span class="ml-auto bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Mahasiswa</span>
+                        <span class="ml-auto bg-[#EEC8A3] text-[#3A2E2A] text-xs px-2 py-1 rounded-full font-medium">Mahasiswa</span>
                     </div>
-                    <div class="flex items-center p-3 bg-gray-50 rounded-lg">
-                        <img src="https://ui-avatars.com/api/?name=Siti+Nurhaliza&background=10B981&color=fff" 
-                            alt="User" class="w-10 h-10 rounded-full">
+                    <div class="flex items-center p-3 bg-[#FAF4EF] rounded-lg">
+                        <div class="bg-[#EEC8A3] text-[#3A2E2A] p-2 rounded-full">
+                            <i class="fas fa-user"></i>
+                        </div>
                         <div class="ml-3">
                             <p class="font-medium">Siti Nurhaliza</p>
                             <p class="text-sm text-gray-500">Bergabung 1 hari lalu</p>
                         </div>
-                        <span class="ml-auto bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Pegawai</span>
+                        <span class="ml-auto bg-[#3A2E2A] text-white text-xs px-2 py-1 rounded-full font-medium">Pegawai</span>
                     </div>
-                    <div class="flex items-center p-3 bg-gray-50 rounded-lg">
-                        <img src="https://ui-avatars.com/api/?name=Budi+Santoso&background=F59E0B&color=fff" 
-                            alt="User" class="w-10 h-10 rounded-full">
+                    <div class="flex items-center p-3 bg-[#FAF4EF] rounded-lg">
+                        <div class="bg-[#EEC8A3] text-[#3A2E2A] p-2 rounded-full">
+                            <i class="fas fa-user"></i>
+                        </div>
                         <div class="ml-3">
                             <p class="font-medium">Budi Santoso</p>
                             <p class="text-sm text-gray-500">Bergabung 2 hari lalu</p>
                         </div>
-                        <span class="ml-auto bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Mahasiswa</span>
+                        <span class="ml-auto bg-[#EEC8A3] text-[#3A2E2A] text-xs px-2 py-1 rounded-full font-medium">Mahasiswa</span>
                     </div>
                 </div>
-                <a href="{{ route('admin.users.index') }}" class="block text-center text-blue-600 hover:text-blue-800 mt-4 font-medium">
+                <a href="{{ route('admin.users.index') }}" class="block text-center text-[#D24C49] hover:text-red-700 mt-4 font-medium">
                     Lihat Semua Pengguna
                 </a>
             </div>
 
             <!-- Recent Loans -->
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <h3 class="font-bold text-lg mb-4">Peminjaman Terbaru</h3>
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-[#EEC8A3]">
+                <h3 class="font-bold text-lg text-gray-800 mb-4">Peminjaman Terbaru</h3>
                 <div class="space-y-3">
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center justify-between p-3 bg-[#FAF4EF] rounded-lg">
                         <div>
-                            <p class="font-medium">Machine Learning Fundamentals</p>
+                            <p class="font-medium text-gray-800">Machine Learning Fundamentals</p>
                             <p class="text-sm text-gray-500">Ahmad Rizki • 15 Nov 2025</p>
                         </div>
-                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Aktif</span>
+                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">Aktif</span>
                     </div>
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center justify-between p-3 bg-[#FAF4EF] rounded-lg">
                         <div>
-                            <p class="font-medium">Data Science Handbook</p>
+                            <p class="font-medium text-gray-800">Data Science Handbook</p>
                             <p class="text-sm text-gray-500">Siti Nurhaliza • 14 Nov 2024</p>
                         </div>
-                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Aktif</span>
+                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">Aktif</span>
                     </div>
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center justify-between p-3 bg-[#FAF4EF] rounded-lg">
                         <div>
-                            <p class="font-medium">Web Development Guide</p>
+                            <p class="font-medium text-gray-800">Web Development Guide</p>
                             <p class="text-sm text-gray-500">Budi Santoso • 10 Nov 2024</p>
                         </div>
-                        <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Akan Jatuh Tempo</span>
+                        <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-medium">Akan Jatuh Tempo</span>
                     </div>
                 </div>
-                <a href="{{ route('admin.loans.index') }}" class="block text-center text-blue-600 hover:text-blue-800 mt-4 font-medium">
+                <a href="{{ route('admin.loans.index') }}" class="block text-center text-[#D24C49] hover:text-red-700 mt-4 font-medium">
                     Lihat Semua Peminjaman
                 </a>
             </div>
         </div>
 
         <!-- Footer -->
-        <footer class="text-center text-gray-500 text-sm py-4">
-            <p>© 2025 Library Management System. All rights reserved.</p>
+        <footer class="text-center text-gray-500 text-sm py-4 border-t border-[#EEC8A3]">
+            <p>© 2025 N-CLiterASi Perpustakaan Digital. All rights reserved.</p>
         </footer>
     </div>
 
@@ -379,8 +410,8 @@
                     datasets: [{
                         label: 'Peminjaman Bulanan',
                         data: monthlyLoansData.data,
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(210, 76, 73, 0.1)',
+                        borderColor: '#D24C49',
                         borderWidth: 2,
                         tension: 0.4,
                         fill: true
@@ -413,16 +444,6 @@
                         }
                     }
                 }
-            });
-        });
-
-        // Add active class to clicked nav item
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', function() {
-                document.querySelectorAll('.nav-item').forEach(nav => {
-                    nav.classList.remove('active');
-                });
-                this.classList.add('active');
             });
         });
     </script>

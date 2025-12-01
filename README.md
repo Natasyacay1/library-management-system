@@ -1,6 +1,6 @@
 # 📚 Sistem Manajemen Perpustakaan Digital
 
-Sistem manajemen perpustakaan digital berbasis web yang dibangun dengan Laravel framework. Mendukung multi-role user (Admin, Pegawai, Mahasiswa) dengan fitur lengkap untuk mengelola koleksi buku, peminjaman, dan ulasan.
+Sistem manajemen perpustakaan digital berbasis web yang dibangun dengan Laravel framework. Mendukung multi-role user (Admin, Pegawai, Mahasiswa) dengan fitur lengkap untuk mengelola koleksi buku, peminjaman, dan ulasan. 
 
 ## 🚀 Fitur Utama
 
@@ -24,7 +24,7 @@ Sistem manajemen perpustakaan digital berbasis web yang dibangun dengan Laravel 
 ### 🎓 Role Mahasiswa
 - **Dashboard** personal dengan riwayat
 - **Peminjaman Buku** - ajukan pinjam buku
-- **Katalog Buku** - jelajahi koleksi
+- **Katalog Buku** - jelajahi koleksi buku
 - **Sistem Rating & Review** - beri ulasan buku
 - **Riwayat Peminjaman** - lihat history
 - **Notifikasi** - dapatkan pemberitahuan
@@ -70,7 +70,7 @@ env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=library_db
+DB_DATABASE=db_library
 DB_USERNAME=root
 DB_PASSWORD=
 Jalankan Migration & Seeder

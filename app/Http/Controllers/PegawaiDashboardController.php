@@ -20,7 +20,7 @@ class PegawaiDashboardController extends Controller
             ->count();
         $totalBooks = Book::count();
         $totalMembers = User::where('role', 'mahasiswa')->count();
-        
+
         // Hitung keterlambatan
         $overdueCount = Loan::where('status', 'approved')
             ->whereNull('returned_at')
@@ -50,7 +50,7 @@ class PegawaiDashboardController extends Controller
 
         return view('pegawai.dashboard', compact(
             'pendingLoansCount',
-            'activeLoansCount', 
+            'activeLoansCount',
             'totalBooks',
             'totalMembers',
             'overdueCount',
@@ -58,6 +58,43 @@ class PegawaiDashboardController extends Controller
             'pendingApprovals',
             'activeLoans'
         ));
+    }
+    public function editBook(Book $book)
+    {
+        return view('pegawai.books.edit', compact('book'));
+    }
+
+    public function updateBook(Request $request, Book $book)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'author' => 'required|string|max:255',
+            'isbn' => 'required|string|max:20|unique:books,isbn,' . $book->id,
+            'publisher' => 'required|string|max:255',
+            'year' => 'required|integer|min:1900|max:' . date('Y'),
+            'description' => 'required|string',
+            'category' => 'required|string',
+            'stock' => 'required|integer|min:0',
+        ]);
+
+        $book->update($validated);
+
+        return redirect()->route('pegawai.books.index')
+            ->with('success', 'Buku berhasil diperbarui!');
+    }
+
+    public function destroyBook(Book $book)
+    {
+        // Cek apakah buku sedang dipinjam
+        if ($book->activeLoans()->count() > 0) {
+            return redirect()->route('pegawai.books.index')
+                ->with('error', 'Tidak dapat menghapus buku yang sedang dipinjam!');
+        }
+
+        $book->delete();
+
+        return redirect()->route('pegawai.books.index')
+            ->with('success', 'Buku berhasil dihapus!');
     }
 
     public function loans()
@@ -73,7 +110,7 @@ class PegawaiDashboardController extends Controller
     {
         try {
             $loan = Loan::findOrFail($loan);
-            
+
             // Cek apakah buku masih tersedia
             if ($loan->book->stock < 1) {
                 return redirect()->back()->with('error', 'Stok buku tidak tersedia.');
@@ -90,7 +127,6 @@ class PegawaiDashboardController extends Controller
             $loan->book->decrement('stock');
 
             return redirect()->back()->with('success', 'Peminjaman berhasil disetujui!');
-
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
@@ -100,7 +136,7 @@ class PegawaiDashboardController extends Controller
     {
         try {
             $loan = Loan::findOrFail($loan);
-            
+
             $loan->update([
                 'status' => 'rejected',
                 'rejected_at' => now(),
@@ -108,7 +144,6 @@ class PegawaiDashboardController extends Controller
             ]);
 
             return redirect()->back()->with('success', 'Peminjaman berhasil ditolak.');
-
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
@@ -118,7 +153,7 @@ class PegawaiDashboardController extends Controller
     {
         try {
             $loan = Loan::findOrFail($loan);
-            
+
             $loan->update([
                 'returned_at' => now()
             ]);
@@ -127,7 +162,6 @@ class PegawaiDashboardController extends Controller
             $loan->book->increment('stock');
 
             return redirect()->back()->with('success', 'Buku berhasil dikembalikan.');
-
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
@@ -186,7 +220,7 @@ class PegawaiDashboardController extends Controller
         $reviews = \App\Models\Review::with(['user', 'book'])
             ->latest()
             ->paginate(10);
-        
+
         return view('pegawai.reviews.index', compact('reviews'));
     }
 
@@ -194,7 +228,7 @@ class PegawaiDashboardController extends Controller
     {
         try {
             $loan = Loan::findOrFail($loan);
-            
+
             $request->validate([
                 'extended_days' => 'required|integer|min:1|max:7'
             ]);
@@ -205,7 +239,6 @@ class PegawaiDashboardController extends Controller
             ]);
 
             return redirect()->back()->with('success', 'Peminjaman berhasil diperpanjang.');
-
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }

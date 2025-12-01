@@ -23,7 +23,7 @@ Route::get('/', [BookController::class, 'homepage'])->name('home');
 | Guest Katalog
 |--------------------------------------------------------------------------
 */
-Route::get('/books', [BookController::class, 'index'])->name('books.index');
+Route::get('/books', [BookController::class, 'index'])->name('books.catalog');
 Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
 
 
@@ -127,7 +127,7 @@ Route::prefix('admin')
 
 /*
 |--------------------------------------------------------------------------
-| PEGAWAI ROUTES
+| PEGAWAI ROUTES - DIPERBAIKI (TAMBAH ROUTE EDIT/UPDATE/DELETE)
 |--------------------------------------------------------------------------
 */
 Route::prefix('pegawai')
@@ -138,6 +138,16 @@ Route::prefix('pegawai')
         Route::get('/dashboard', [PegawaiDashboardController::class, 'index'])
             ->name('dashboard');
 
+        // Books Management - FULL CRUD
+        Route::get('/books', [PegawaiDashboardController::class, 'books'])->name('books.index');
+        Route::get('/books/create', [PegawaiDashboardController::class, 'createBook'])->name('books.create');
+        Route::post('/books', [PegawaiDashboardController::class, 'storeBook'])->name('books.store');
+        
+        // TAMBAHAN: Route untuk edit, update, dan delete
+        Route::get('/books/{book}/edit', [PegawaiDashboardController::class, 'editBook'])->name('books.edit');
+        Route::put('/books/{book}', [PegawaiDashboardController::class, 'updateBook'])->name('books.update');
+        Route::delete('/books/{book}', [PegawaiDashboardController::class, 'destroyBook'])->name('books.destroy');
+
         // Loans Management
         Route::get('/loans', [PegawaiDashboardController::class, 'loans'])->name('loans.index');
         Route::post('/loans/{loan}/approve', [PegawaiDashboardController::class, 'approveLoan'])
@@ -146,11 +156,6 @@ Route::prefix('pegawai')
             ->name('loans.reject');
         Route::post('/loans/{loan}/return', [PegawaiDashboardController::class, 'returnBook'])
             ->name('loans.return');
-
-        // Books Management
-        Route::get('/books', [PegawaiDashboardController::class, 'books'])->name('books.index');
-        Route::get('/books/create', [PegawaiDashboardController::class, 'createBook'])->name('books.create');
-        Route::post('/books', [PegawaiDashboardController::class, 'storeBook'])->name('books.store');
 
         // Reviews Management (Pegawai bisa lihat review)
         Route::get('/reviews', [PegawaiDashboardController::class, 'reviews'])->name('reviews.index');
@@ -218,3 +223,13 @@ Route::prefix('mahasiswa')
 */
 Route::get('/books/{book}/reviews', [ReviewController::class, 'index'])->name('reviews.index');
 Route::get('/reviews/latest', [ReviewController::class, 'latest'])->name('reviews.latest');
+
+
+/*
+|--------------------------------------------------------------------------
+| FALLBACK ROUTE - Untuk handle 404
+|--------------------------------------------------------------------------
+*/
+Route::fallback(function () {
+    return response()->view('errors.404', [], 404);
+});
