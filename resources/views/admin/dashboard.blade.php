@@ -166,7 +166,7 @@
                 <div class="flex justify-between items-center">
                     <div>
                         <p class="text-gray-500">Total Pengguna</p>
-                        <h3 class="text-3xl font-bold text-[#D24C49]">1,248</h3>
+                        <h3 class="text-3xl font-bold text-[#D24C49]">5</h3>
                     </div>
                     <div class="bg-[#EEC8A3] p-3 rounded-full">
                         <i class="fas fa-users text-[#D24C49] text-2xl"></i>
@@ -179,7 +179,7 @@
                 <div class="flex justify-between items-center">
                     <div>
                         <p class="text-gray-500">Total Buku</p>
-                        <h3 class="text-3xl font-bold text-[#D24C49]">5,367</h3>
+                        <h3 class="text-3xl font-bold text-[#D24C49]">20</h3>
                     </div>
                     <div class="bg-[#EEC8A3] p-3 rounded-full">
                         <i class="fas fa-book text-[#D24C49] text-2xl"></i>
@@ -192,7 +192,7 @@
                 <div class="flex justify-between items-center">
                     <div>
                         <p class="text-gray-500">Peminjaman Aktif</p>
-                        <h3 class="text-3xl font-bold text-[#D24C49]">324</h3>
+                        <h3 class="text-3xl font-bold text-[#D24C49]">2+</h3>
                     </div>
                     <div class="bg-[#EEC8A3] p-3 rounded-full">
                         <i class="fas fa-exchange-alt text-[#D24C49] text-2xl"></i>
@@ -205,7 +205,7 @@
                 <div class="flex justify-between items-center">
                     <div>
                         <p class="text-gray-500">Total Denda</p>
-                        <h3 class="text-3xl font-bold text-[#D24C49]">Rp 1.250.000</h3>
+                        <h3 class="text-3xl font-bold text-[#D24C49]">0</h3>
                     </div>
                     <div class="bg-[#EEC8A3] p-3 rounded-full">
                         <i class="fas fa-money-bill-wave text-[#D24C49] text-2xl"></i>
@@ -223,8 +223,6 @@
                     <h3 class="font-bold text-lg text-gray-800">Peminjaman Bulanan</h3>
                     <select class="border border-gray-300 rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#D24C49]">
                         <option>Tahun 2025</option>
-                        <option>Tahun 2024</option>
-                        <option>Tahun 2023</option>
                     </select>
                 </div>
                 <div class="chart-container">
@@ -241,7 +239,7 @@
                             <i class="fas fa-exclamation-triangle text-[#D24C49] mt-1 mr-3"></i>
                             <div>
                                 <h4 class="font-medium text-gray-800">Buku Terlambat</h4>
-                                <p class="text-sm text-gray-600">24 buku belum dikembalikan setelah jatuh tempo</p>
+                                <p class="text-sm text-gray-600">0 buku belum dikembalikan setelah jatuh tempo</p>
                                 <a href="{{ route('admin.loans.index') }}" class="text-[#D24C49] text-sm hover:underline mt-1 inline-block font-medium">Lihat detail</a>
                             </div>
                         </div>
@@ -252,7 +250,7 @@
                             <i class="fas fa-box-open text-[#A52C2A] mt-1 mr-3"></i>
                             <div>
                                 <h4 class="font-medium text-gray-800">Stok Habis</h4>
-                                <p class="text-sm text-gray-600">18 buku sudah habis stoknya</p>
+                                <p class="text-sm text-gray-600">10+ buku sudah habis stoknya</p>
                                 <a href="{{ route('admin.books.index') }}" class="text-[#D24C49] text-sm hover:underline mt-1 inline-block font-medium">Kelola stok</a>
                             </div>
                         </div>
@@ -263,7 +261,7 @@
                             <i class="fas fa-book-open text-[#3A2E2A] mt-1 mr-3"></i>
                             <div>
                                 <h4 class="font-medium text-gray-800">Peminjaman Aktif</h4>
-                                <p class="text-sm text-gray-600">324 buku sedang dipinjam</p>
+                                <p class="text-sm text-gray-600">1 buku sedang dipinjam</p>
                                 <a href="{{ route('admin.loans.index') }}" class="text-[#D24C49] text-sm hover:underline mt-1 inline-block font-medium">Lihat semua</a>
                             </div>
                         </div>
@@ -274,7 +272,7 @@
                             <i class="fas fa-clock text-[#D24C49] mt-1 mr-3"></i>
                             <div>
                                 <h4 class="font-medium text-gray-800">Jatuh Tempo Segera</h4>
-                                <p class="text-sm text-gray-600">15 buku akan jatuh tempo dalam 2 hari</p>
+                                <p class="text-sm text-gray-600">0 fbuku akan jatuh tempo dalam 2 hari</p>
                                 <a href="{{ route('admin.loans.index') }}" class="text-[#D24C49] text-sm hover:underline mt-1 inline-block font-medium">Notifikasi</a>
                             </div>
                         </div>
@@ -317,8 +315,8 @@
                             <i class="fas fa-user"></i>
                         </div>
                         <div class="ml-3">
-                            <p class="font-medium">Ahmad Rizki</p>
-                            <p class="text-sm text-gray-500">Bergabung 2 jam lalu</p>
+                            <p class="font-medium">Mahasiswa 1</p>
+                            <p class="text-sm text-gray-500">Bergabung 6 hari yang lalu</p>
                         </div>
                         <span class="ml-auto bg-[#EEC8A3] text-[#3A2E2A] text-xs px-2 py-1 rounded-full font-medium">Mahasiswa</span>
                     </div>
@@ -327,8 +325,8 @@
                             <i class="fas fa-user"></i>
                         </div>
                         <div class="ml-3">
-                            <p class="font-medium">Siti Nurhaliza</p>
-                            <p class="text-sm text-gray-500">Bergabung 1 hari lalu</p>
+                            <p class="font-medium">Pegawai Perpus </p>
+                            <p class="text-sm text-gray-500">Bergabung 6 hari lalu</p>
                         </div>
                         <span class="ml-auto bg-[#3A2E2A] text-white text-xs px-2 py-1 rounded-full font-medium">Pegawai</span>
                     </div>
@@ -337,8 +335,8 @@
                             <i class="fas fa-user"></i>
                         </div>
                         <div class="ml-3">
-                            <p class="font-medium">Budi Santoso</p>
-                            <p class="text-sm text-gray-500">Bergabung 2 hari lalu</p>
+                            <p class="font-medium">Natasya</p>
+                            <p class="text-sm text-gray-500">Bergabung 3 hari yang lalu</p>
                         </div>
                         <span class="ml-auto bg-[#EEC8A3] text-[#3A2E2A] text-xs px-2 py-1 rounded-full font-medium">Mahasiswa</span>
                     </div>
@@ -355,21 +353,21 @@
                     <div class="flex items-center justify-between p-3 bg-[#FAF4EF] rounded-lg">
                         <div>
                             <p class="font-medium text-gray-800">Machine Learning Fundamentals</p>
-                            <p class="text-sm text-gray-500">Ahmad Rizki • 15 Nov 2025</p>
+                            <p class="text-sm text-gray-500">Natasya •29 November 2025</p>
                         </div>
                         <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">Aktif</span>
                     </div>
                     <div class="flex items-center justify-between p-3 bg-[#FAF4EF] rounded-lg">
                         <div>
-                            <p class="font-medium text-gray-800">Data Science Handbook</p>
-                            <p class="text-sm text-gray-500">Siti Nurhaliza • 14 Nov 2024</p>
+                            <p class="font-medium text-gray-800">Bumi</p>
+                            <p class="text-sm text-gray-500">Mahasiswa 1 • 30 Nov 2024</p>
                         </div>
                         <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">Aktif</span>
                     </div>
                     <div class="flex items-center justify-between p-3 bg-[#FAF4EF] rounded-lg">
                         <div>
-                            <p class="font-medium text-gray-800">Web Development Guide</p>
-                            <p class="text-sm text-gray-500">Budi Santoso • 10 Nov 2024</p>
+                            <p class="font-medium text-gray-800">Bumi</p>
+                            <p class="text-sm text-gray-500">Mahasiswa 1 • 2 Desember 2024</p>
                         </div>
                         <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-medium">Akan Jatuh Tempo</span>
                     </div>

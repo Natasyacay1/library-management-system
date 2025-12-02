@@ -80,15 +80,15 @@
     <section class="py-16 soft-bg">
         <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-10 text-center">
             <div class="p-6 rounded-xl bg-white shadow-md">
-                <div class="text-4xl font-bold text-[#D24C49] mb-2">5,000+</div>
+                <div class="text-4xl font-bold text-[#D24C49] mb-2">10+</div>
                 <div class="font-medium">Buku Digital</div>
             </div>
             <div class="p-6 rounded-xl bg-white shadow-md">
-                <div class="text-4xl font-bold text-[#D24C49] mb-2">1,200+</div>
+                <div class="text-4xl font-bold text-[#D24C49] mb-2">5+</div>
                 <div class="font-medium">Anggota Aktif</div>
             </div>
             <div class="p-6 rounded-xl bg-white shadow-md">
-                <div class="text-4xl font-bold text-[#D24C49] mb-2">50+</div>
+                <div class="text-4xl font-bold text-[#D24C49] mb-2">5+</div>
                 <div class="font-medium">Kategori Buku</div>
             </div>
             <div class="p-6 rounded-xl bg-white shadow-md">
